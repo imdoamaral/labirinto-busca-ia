@@ -20,6 +20,9 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
   diferença entre BFS e UCS com custos variados.
 - Redação das respostas das questões de análise da Parte II (seção 5.4) a partir
   dos números medidos nos experimentos.
+- Parte III: matriz de distâncias (reaproveitando o A*), função de custo da rota,
+  Hill-Climbing, Simulated Annealing, vizinhança por inversão de trecho, gráfico
+  de convergência e análise de sensibilidade (temperatura/resfriamento).
 
 ## 3. O que foi gerado/adaptado com apoio de IA
 
@@ -40,3 +43,7 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
 - [ ] Como a UCS usa o custo acumulado g(n) e por que difere da BFS com a lama.
 - [ ] Por que a Busca Gulosa pode ser subótima.
 - [ ] Como o A* combina g(n)+h(n) e por que a heurística de Manhattan é admissível.
+- [ ] Como a rota é representada e como C(s) usa as distâncias do A*.
+- [ ] Por que o Hill-Climbing fica preso em mínimos locais.
+- [ ] Como o Simulated Annealing aceita pioras (exp(−Δ/T)) para escapar deles.
+- [ ] Efeito da temperatura inicial e da taxa de resfriamento na convergência.
