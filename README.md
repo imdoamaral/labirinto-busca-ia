@@ -28,7 +28,7 @@ mapas/               # labirintos de teste (legenda: # parede, ' ' livre, ~ lama
 experimentos.py        # Parte II: tabela comparativa das buscas clássicas
 experimentos_local.py  # Parte III: busca local + gráfico de convergência
 experimentos_online.py # Parte IV: busca online + razão online/offline
-docs/                  # modelagem PEAS e análises (Partes II, III e IV)
+docs/                  # modelagem PEAS, análises (Partes II–IV) e relatorio.md (consolidado)
 uso_ia.md              # declaração de uso de IA (obrigatório)
 ```
 
