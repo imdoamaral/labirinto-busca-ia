@@ -20,10 +20,12 @@ Otimização da ordem de visitação dos pontos de coleta no mapa
 
 | Método | Melhor | Pior | Médio | Tempo méd. | Iter. méd. | Sucesso |
 |--------|:------:|:----:|:-----:|:----------:|:----------:|:-------:|
-| Hill-Climbing       | 32 | 38 | 33.1 | 0.18 ms | 4    | 73%  |
-| Simulated Annealing | 32 | 32 | 32.0 | 6.32 ms | 2297 | 100% |
+| Hill-Climbing             | 32 | 38 | 33.1 | 0.18 ms  | 4    | 73%  |
+| Simulated Annealing       | 32 | 32 | 32.0 | 6.32 ms  | 2297 | 100% |
+| Algoritmo Genético (bônus)| 32 | 32 | 32.0 | 38.6 ms  | 100  | 100% |
 
-Curva de convergência (iteração × melhor custo): `docs/figuras/convergencia_local.png`.
+Curvas de convergência: `docs/figuras/convergencia_local.png` (HC × SA) e
+`docs/figuras/convergencia_ga.png` (geração × melhor custo do GA).
 
 ### Sensibilidade do Simulated Annealing
 Taxa de sucesso em atingir o ótimo (30 execuções por configuração):
@@ -83,3 +85,17 @@ iterações) e entrega qualidade máxima (100%). O resfriamento controla esse
 compromisso: mais lento = melhor qualidade e mais tempo. Uma estratégia prática
 e barata é **Hill-Climbing com vários reinícios aleatórios**, que se aproxima da
 qualidade do SA usando pouco tempo por execução.
+
+## Bônus — Algoritmo Genético
+
+Implementado em `parte3_local/genetico.py` sobre a mesma representação
+(permutação dos pontos de coleta). Operadores que preservam permutações:
+**seleção por torneio**, **cruzamento por ordem (OX)**, **mutação por troca** e
+**elitismo** (o melhor indivíduo sempre sobrevive).
+
+Resultado: atingiu o ótimo (32) em **100%** das 30 execuções (50 indivíduos,
+100 gerações), convergindo já por volta da **geração 7**
+(`docs/figuras/convergencia_ga.png`). Em qualidade empata com o SA; em tempo é o
+mais caro (~38.6 ms), pois avalia uma população inteira a cada geração. Mostra
+que uma busca **populacional** também resolve bem o problema, com o custo
+adicional de manter muitos candidatos simultaneamente.

@@ -117,10 +117,12 @@ desvio livre ao lado).
 
 | Método | Melhor | Pior | Médio | Tempo méd. | Iter. méd. | Sucesso |
 |--------|:------:|:----:|:-----:|:----------:|:----------:|:-------:|
-| Hill-Climbing       | 32 | 38 | 33.1 | 0.18 ms | 4    | 73%  |
-| Simulated Annealing | 32 | 32 | 32.0 | 6.32 ms | 2297 | 100% |
+| Hill-Climbing             | 32 | 38 | 33.1 | 0.18 ms | 4    | 73%  |
+| Simulated Annealing       | 32 | 32 | 32.0 | 6.32 ms | 2297 | 100% |
+| Algoritmo Genético (bônus)| 32 | 32 | 32.0 | 38.6 ms | 100  | 100% |
 
 ![Convergência da busca local](figuras/convergencia_local.png)
+![Convergência do Algoritmo Genético](figuras/convergencia_ga.png)
 
 **Sensibilidade do SA (taxa de sucesso em atingir o ótimo):**
 
@@ -143,6 +145,12 @@ desvio livre ao lado).
    parametrizado). Em geral não há garantia — aqui confirmamos por força bruta.
 6. **Compromisso tempo × qualidade:** HC é ~35× mais rápido porém pior; SA é
    lento e ótimo. Uma alternativa barata é HC com vários reinícios aleatórios.
+
+**Bônus — Algoritmo Genético** (`parte3_local/genetico.py`): abordagem
+populacional com seleção por torneio, cruzamento por ordem (OX), mutação por
+troca e elitismo. Atingiu o ótimo (32) em 100% das execuções, convergindo por
+volta da geração 7, mas é o mais caro em tempo (~38.6 ms) por avaliar a
+população inteira a cada geração.
 
 ## 5. Parte IV — Busca online
 
@@ -185,7 +193,8 @@ As três abordagens resolvem o mesmo domínio com compromissos distintos:
   grande demais para busca exaustiva, a busca local entrega boas soluções
   rapidamente. O **Simulated Annealing** supera o Hill-Climbing por escapar de
   mínimos locais, controlando o compromisso tempo × qualidade pela taxa de
-  resfriamento.
+  resfriamento. O **Algoritmo Genético** (bônus) também alcança o ótimo, com a
+  abordagem populacional ao custo de mais tempo.
 - **Busca online** (mapa desconhecido): sem informação completa, o agente paga um
   preço (razão ≥ 1) por descobrir o mapa enquanto age. O **replanning A\***
   reaproveita a busca clássica e mantém esse preço baixo quando o ambiente é

@@ -18,11 +18,13 @@ from parte3_local.distancias import calcular_distancias
 from parte3_local.custo import custo_rota
 from parte3_local.hill_climbing import hill_climbing
 from parte3_local.simulated_annealing import simulated_annealing
+from parte3_local.genetico import algoritmo_genetico
 from viz.graficos import plotar_convergencia
 
 NUM_EXECUCOES = 30
 SEMENTE = 42                 # fixa o acaso para os resultados serem reproduzíveis
 FIGURA = "docs/figuras/convergencia_local.png"
+FIGURA_GA = "docs/figuras/convergencia_ga.png"
 
 
 def custo_otimo(coletas, distancias, inicio, objetivo):
@@ -78,7 +80,8 @@ def rodar(caminho_mapa):
 
     custos_hc, tempos_hc, iters_hc = [], [], []
     custos_sa, tempos_sa, iters_sa = [], [], []
-    historico_hc = historico_sa = None
+    custos_ga, tempos_ga, iters_ga = [], [], []
+    historico_hc = historico_sa = historico_ga = None
 
     for _ in range(NUM_EXECUCOES):
         ordem_inicial = random.sample(coletas, len(coletas))  # reinício aleatório
@@ -95,20 +98,37 @@ def rodar(caminho_mapa):
         custos_sa.append(custo_sa)
         iters_sa.append(len(hist_sa) - 1)
 
+        # O Algoritmo Genético gera a própria população inicial (não usa ordem_inicial).
+        # Salvamos e restauramos o estado do RNG em volta dele para que o GA não
+        # altere o fluxo de números aleatórios usado por HC, SA e pela análise de
+        # sensibilidade — assim os resultados das demais partes ficam estáveis.
+        estado_rng = random.getstate()
+        t0 = time.perf_counter()
+        _, custo_ga, hist_ga = algoritmo_genetico(coletas, distancias, inicio, objetivo)
+        tempos_ga.append(time.perf_counter() - t0)
+        random.setstate(estado_rng)
+        custos_ga.append(custo_ga)
+        iters_ga.append(len(hist_ga) - 1)
+
         # Guarda a primeira execução como curva representativa do gráfico.
         if historico_hc is None:
-            historico_hc, historico_sa = hist_hc, hist_sa
+            historico_hc, historico_sa, historico_ga = hist_hc, hist_sa, hist_ga
 
     resumo = [
         resumir("Hill-Climbing", custos_hc, tempos_hc, iters_hc, otimo),
         resumir("Simulated Annealing", custos_sa, tempos_sa, iters_sa, otimo),
+        resumir("Algoritmo Genético", custos_ga, tempos_ga, iters_ga, otimo),
     ]
     imprimir_resumo(resumo, otimo)
 
     plotar_convergencia(
         {"Hill-Climbing": historico_hc, "Simulated Annealing": historico_sa},
         FIGURA, titulo="Convergência da busca local (iteração × melhor custo)")
-    print(f"\nGráfico de convergência salvo em: {FIGURA}")
+    plotar_convergencia(
+        {"Algoritmo Genético": historico_ga},
+        FIGURA_GA, titulo="Convergência do Algoritmo Genético (geração × melhor custo)",
+        rotulo_x="Geração")
+    print(f"\nGráficos de convergência salvos em: {FIGURA} e {FIGURA_GA}")
 
     analise_sensibilidade(coletas, distancias, inicio, objetivo, otimo)
 

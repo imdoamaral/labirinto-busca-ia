@@ -10,8 +10,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
-def plotar_convergencia(historicos, caminho_saida, titulo="Convergência"):
-    """Plota a curva iteração × melhor custo de cada método.
+def plotar_convergencia(historicos, caminho_saida, titulo="Convergência",
+                        rotulo_x="Iteração"):
+    """Plota a curva (iteração/geração) × melhor custo de cada método.
 
     `historicos` é um dicionário nome_do_metodo -> lista de custos por iteração.
     """
@@ -19,7 +20,7 @@ def plotar_convergencia(historicos, caminho_saida, titulo="Convergência"):
     plt.figure(figsize=(8, 5))
     for nome, historico in historicos.items():
         plt.plot(historico, label=nome)
-    plt.xlabel("Iteração")
+    plt.xlabel(rotulo_x)
     plt.ylabel("Melhor custo")
     plt.title(titulo)
     plt.legend()

@@ -19,6 +19,7 @@ parte3_local/
   vizinhanca.py      # vizinhança por inversão de trecho (2-opt)
   hill_climbing.py
   simulated_annealing.py
+  genetico.py        # bônus: Algoritmo Genético (OX + torneio + elitismo)
 parte4_online/
   online.py          # agente online (replanning A*, mapa interno, percepção r=1)
 viz/

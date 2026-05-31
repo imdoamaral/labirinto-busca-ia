@@ -26,6 +26,8 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
 - Parte IV: agente online com replanning A* (mapa interno, percepção de raio 1,
   free-space assumption), métricas da seção 7.4, razão online/offline e mapa de
   armadilha para evidenciar backtracking.
+- Bônus: Algoritmo Genético (seleção por torneio, cruzamento por ordem OX,
+  mutação por troca, elitismo) sobre a permutação dos pontos de coleta.
 
 ## 3. O que foi gerado/adaptado com apoio de IA
 
@@ -52,3 +54,4 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
 - [ ] Efeito da temperatura inicial e da taxa de resfriamento na convergência.
 - [ ] O ciclo perceber→atualizar→planejar→agir e a free-space assumption.
 - [ ] Por que a razão online/offline pode ser > 1 (preço de não conhecer o mapa).
+- [ ] Como o GA representa indivíduos e por que o cruzamento OX preserva permutações.
