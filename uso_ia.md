@@ -16,11 +16,18 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
   matplotlib; A* online vs. DFS online; papel do notebook; geração de mapas).
 - Geração da fundação da Semana 1: leitura de mapas, formulação formal do
   problema, BFS/DFS/UCS/Gulosa/A* e coleta de métricas.
+- Projeto de um mapa para evidenciar a subotimalidade da Busca Gulosa e a
+  diferença entre BFS e UCS com custos variados.
+- Redação das respostas das questões de análise da Parte II (seção 5.4) a partir
+  dos números medidos nos experimentos.
 
 ## 3. O que foi gerado/adaptado com apoio de IA
 
 - Estrutura inicial de pastas e módulos (`core/`, `parte2_classica/`, `viz/`).
 - Esqueleto comum das cinco buscas (diferindo apenas na estrutura de fronteira).
+- Mapa `mapas/armadilha_gulosa.txt` (corredor de lama + desvio livre) e o
+  documento `docs/analise_parte2.md`. Os valores das tabelas foram obtidos
+  executando `experimentos.py`, não inventados.
 
 ## 4. O que o grupo compreendeu e validou
 
