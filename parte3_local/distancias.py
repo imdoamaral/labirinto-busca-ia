@@ -30,3 +30,20 @@ def calcular_distancias(mapa, pontos):
                 raise ValueError(f"Não há caminho entre {origem} e {destino}.")
             distancias[(origem, destino)] = metricas.custo
     return distancias
+
+
+def caminho_rota(mapa, ordem, inicio, objetivo):
+    """Reconstrói o caminho célula a célula da rota inicio -> ordem -> objetivo.
+
+    Enquanto `calcular_distancias` só guarda o CUSTO de cada trecho, aqui
+    concatenamos os menores caminhos (A*) entre pontos consecutivos para poder
+    DESENHAR a rota da Parte III. Cada trecho começa onde o anterior terminou,
+    então descartamos o primeiro estado de cada trecho para não duplicar a
+    junção.
+    """
+    pontos = [inicio] + list(ordem) + [objetivo]
+    caminho = [inicio]
+    for origem, destino in zip(pontos, pontos[1:]):
+        trecho, _ = a_estrela(ProblemaLabirinto(mapa, inicio=origem, objetivo=destino))
+        caminho.extend(trecho[1:])
+    return caminho

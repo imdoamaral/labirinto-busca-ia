@@ -12,6 +12,8 @@ env/
 # Saídas geradas (figuras/animações de experimentos)
 saidas/
 *.gif
+# Exceção: versionamos os GIFs curados do relatório/README.
+!docs/figuras/**/*.gif
 
 # Material do professor (mantemos só o enunciado versionado)
 slides_aula/

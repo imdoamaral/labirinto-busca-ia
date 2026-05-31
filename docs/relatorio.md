@@ -102,6 +102,28 @@ desvio livre ao lado).
 6. A heurística de **Manhattan é admissível** (nunca superestima), garantindo a
    otimalidade do A*.
 
+### 3.4 Visualização da busca
+As figuras abaixo (geradas por `python gerar_figuras.py parte2`) mostram, no mapa
+`armadilha_gulosa.txt`, as **células exploradas** (hachura azul) e o **caminho
+final** (vermelho). O corredor reto entre `A` e `B` é de lama (`~`, em bege) —
+curto em passos, mas caro; logo abaixo há um desvio livre, mais longo em passos
+porém mais barato em custo.
+
+![Busca Gulosa no mapa armadilha](figuras/parte2/armadilha_gulosa_Gulosa.png)
+
+A **Gulosa** segue só a heurística e mergulha reto pela lama até `B`: explora
+pouquíssimas células (8), mas devolve um caminho de custo 19 — cai exatamente na
+armadilha descrita na análise 3.3.4.
+
+![Busca A* no mapa armadilha](figuras/parte2/armadilha_gulosa_Aestrela.png)
+
+O **A\*** leva em conta o custo já gasto: explora algumas células a mais (11)
+para "enxergar" que contornar pela faixa livre custa 9, e devolve o caminho
+ótimo (análise 3.3.5). Repare que a lama (bege) fica quase toda **inexplorada**.
+As versões animadas (GIF) de todos os algoritmos estão em `docs/figuras/parte2/`;
+para ver a exploração ao vivo no terminal: `python experimentos.py
+mapas/armadilha_gulosa.txt --animar`.
+
 ## 4. Parte III — Busca local
 
 ### 4.1 Modelagem
@@ -121,7 +143,29 @@ desvio livre ao lado).
 | Simulated Annealing       | 32 | 32 | 32.0 | 6.32 ms | 2297 | 100% |
 | Algoritmo Genético (bônus)| 32 | 32 | 32.0 | 38.6 ms | 100  | 100% |
 
+A figura a seguir mostra a **rota ótima** (custo 32) desenhada no mapa: o agente
+sai de `A`, visita todos os pontos de coleta `C` (laranja) na ordem que minimiza
+o custo total e termina em `B`. É essa permutação que os três métodos procuram —
+o desafio é achá-la entre as 8! = 40320 ordens possíveis.
+
+![Rota ótima das coletas](figuras/parte3/rota_otima.png)
+
+<br>
+
+O gráfico abaixo mostra a evolução do **melhor custo encontrado ao longo das
+iterações**. Contraste: o
+Hill-Climbing despenca quase verticalmente e estaciona em poucas iterações
+(converge rápido, mas arrisca parar em um mínimo local), enquanto o Simulated
+Annealing desce em "degraus" — cada patamar é uma melhora aceita — e só atinge
+o ótimo (32) por volta da iteração 770, graças à aceitação ocasional de pioras.
+
 ![Convergência da busca local](figuras/convergencia_local.png)
+
+O Algoritmo Genético (bônus) tem dinâmica distinta: o eixo X é a **geração**, não
+a iteração individual. O melhor custo da população cai rapidamente nas primeiras
+gerações e estabiliza no ótimo (32) por volta da geração 7, permanecendo estável
+até o fim por causa do elitismo (a melhor solução nunca é perdida).
+
 ![Convergência do Algoritmo Genético](figuras/convergencia_ga.png)
 
 **Sensibilidade do SA (taxa de sucesso em atingir o ótimo):**
@@ -166,6 +210,16 @@ as posições de início e objetivo, mas **não** as paredes.
 |------|:-------:|:----------:|:----------:|:---------:|:-----------:|:---------:|:-------------:|:-----:|
 | `exemplo.txt`          | sim | 11 | 13 | 37 | 0 | 11 | 13 | **1.00** |
 | `online_armadilha.txt` | sim | 20 | 20 | 50 | 3 | 20 | 14 | **1.43** |
+
+A figura mostra o **mapa interno** ao final da execução em `online_armadilha.txt`:
+o terreno em cinza-claro nunca foi revelado (`?`), e a linha vermelha é a
+trajetória real. Dá para ver o agente descer reto pela suposição otimista,
+bater num **beco sem saída** e ter de voltar para contornar — é esse desvio que
+eleva a razão online/offline a 1.43. O GIF passo a passo (revelando o mapa a cada
+movimento) está em `docs/figuras/parte4/online.gif`; ao vivo:
+`python experimentos_online.py mapas/online_armadilha.txt --animar`.
+
+![Mapa interno final da busca online](figuras/parte4/online_final.png)
 
 ### 5.3 Análise (seção 7.5)
 1. **Decisões subótimas** acontecem quando a suposição otimista falha: no

@@ -6,6 +6,7 @@ métricas da seção 6.5 e gera o gráfico de convergência iteração × melhor
 Uso, a partir da raiz do projeto:
     python experimentos_local.py
     python experimentos_local.py mapas/coletas.txt
+    python experimentos_local.py mapas/coletas.txt --animar   # rota ótima no terminal
 """
 import sys
 import time
@@ -14,12 +15,13 @@ from itertools import permutations
 from statistics import mean
 
 from core import mapa as modulo_mapa
-from parte3_local.distancias import calcular_distancias
+from parte3_local.distancias import calcular_distancias, caminho_rota
 from parte3_local.custo import custo_rota
 from parte3_local.hill_climbing import hill_climbing
 from parte3_local.simulated_annealing import simulated_annealing
 from parte3_local.genetico import algoritmo_genetico
 from viz.graficos import plotar_convergencia
+from viz.render import construir_quadros, animar_terminal
 
 NUM_EXECUCOES = 30
 SEMENTE = 42                 # fixa o acaso para os resultados serem reproduzíveis
@@ -66,7 +68,18 @@ def imprimir_resumo(linhas, otimo):
         )))
 
 
-def rodar(caminho_mapa):
+def animar_rota_otima(mapa, distancias, inicio, objetivo, coletas):
+    """Anima, no terminal, o agente percorrendo a rota ótima (ordem por força
+    bruta). A busca local da Parte III é sobre permutações, não sobre o espaço;
+    por isso a animação mostra a SOLUÇÃO (a rota final na grade), não a busca."""
+    ordem = min(permutations(coletas),
+                key=lambda o: custo_rota(list(o), distancias, inicio, objetivo))
+    caminho = caminho_rota(mapa, ordem, inicio, objetivo)
+    quadros = construir_quadros([], caminho)        # sem exploração: só a rota
+    animar_terminal(mapa, quadros, titulo="Rota ótima das coletas")
+
+
+def rodar(caminho_mapa, animacao=False):
     random.seed(SEMENTE)
     mapa = modulo_mapa.ler_de_arquivo(caminho_mapa)
     inicio, objetivo, coletas = mapa.inicio, mapa.objetivo, mapa.coletas
@@ -132,6 +145,9 @@ def rodar(caminho_mapa):
 
     analise_sensibilidade(coletas, distancias, inicio, objetivo, otimo)
 
+    if animacao:
+        animar_rota_otima(mapa, distancias, inicio, objetivo, coletas)
+
 
 def analise_sensibilidade(coletas, distancias, inicio, objetivo, otimo):
     """Mede o efeito da temperatura inicial e da taxa de resfriamento no SA
@@ -160,5 +176,7 @@ def analise_sensibilidade(coletas, distancias, inicio, objetivo, otimo):
 
 
 if __name__ == "__main__":
-    caminho = sys.argv[1] if len(sys.argv) > 1 else "mapas/coletas.txt"
-    rodar(caminho)
+    args = [a for a in sys.argv[1:] if a != "--animar"]
+    animacao = "--animar" in sys.argv
+    caminho = args[0] if args else "mapas/coletas.txt"
+    rodar(caminho, animacao)

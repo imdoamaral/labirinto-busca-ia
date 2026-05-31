@@ -23,13 +23,16 @@ parte3_local/
 parte4_online/
   online.py          # agente online (replanning A*, mapa interno, percepção r=1)
 viz/
-  render.py          # visualização no terminal (com '@' do agente no modo online)
+  render.py          # visualização e animação de exploração no terminal (ASCII)
   graficos.py        # curva de convergência (matplotlib)
+  figuras.py         # figuras coloridas do labirinto: PNG estático e GIF animado
 mapas/               # labirintos de teste (legenda: # parede, ' ' livre, ~ lama, A, B, C, ?)
 experimentos.py        # Parte II: tabela comparativa das buscas clássicas
 experimentos_local.py  # Parte III: busca local + gráfico de convergência
 experimentos_online.py # Parte IV: busca online + razão online/offline
+gerar_figuras.py       # gera as figuras coloridas (PNG + GIF) das três partes
 docs/                  # modelagem PEAS, análises (Partes II–IV) e relatorio.md (consolidado)
+docs/figuras/          # figuras do relatório (convergência, percursos, exploração)
 uso_ia.md              # declaração de uso de IA (obrigatório)
 ```
 
@@ -42,7 +45,19 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt  # matplotlib
 .venv/bin/python experimentos.py mapas/X.txt              # Parte II em outro mapa
 .venv/bin/python experimentos_local.py                    # Parte III (mapas/coletas.txt)
 .venv/bin/python experimentos_online.py mapas/X.txt       # Parte IV
-.venv/bin/python experimentos_online.py mapas/X.txt --animar  # trajetória passo a passo
+```
+
+### Visualização
+
+```bash
+# Animação da exploração AO VIVO no terminal (ASCII, sem dependências):
+.venv/bin/python experimentos.py mapas/X.txt --animar         # Parte II: cada algoritmo
+.venv/bin/python experimentos_local.py --animar               # Parte III: rota ótima
+.venv/bin/python experimentos_online.py mapas/X.txt --animar  # Parte IV: trajetória
+
+# Figuras coloridas (PNG para o relatório + GIF para o repo) em docs/figuras/:
+.venv/bin/python gerar_figuras.py            # todas as partes
+.venv/bin/python gerar_figuras.py parte2     # só uma parte (parte2 | parte3 | parte4)
 ```
 
 ## Cronograma

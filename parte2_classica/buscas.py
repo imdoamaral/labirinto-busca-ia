@@ -8,6 +8,11 @@ Cada função recebe um `ProblemaLabirinto` e devolve uma tupla:
 onde `caminho` é a lista de estados do início ao objetivo (ou None se a busca
 falhar) e `metricas` é um objeto `Metricas` preenchido.
 
+Parâmetro opcional `traco`: se uma lista for passada, registramos nela a ORDEM
+em que os nós são explorados (retirados da fronteira). É usado só pela camada de
+visualização; por padrão (None) não há custo algum, então as chamadas em massa
+da Parte III e do modo online não são afetadas.
+
 Todas as buscas seguem o mesmo esqueleto e diferem apenas na ESTRUTURA DA
 FRONTEIRA, que é o que define a ordem de visita dos nós:
     BFS    -> fila (FIFO)                  | collections.deque
@@ -54,7 +59,7 @@ def _finalizar(problema, veio_de, objetivo, metricas, tempo_inicial):
 
 # --- Buscas não-informadas (sem heurística) --------------------------------
 
-def bfs(problema):
+def bfs(problema, traco=None):
     """Busca em Largura. Explora por camadas; encontra o caminho com MENOS
     passos. Só é ótima em custo quando todos os movimentos custam o mesmo."""
     tempo_inicial = time.perf_counter()
@@ -67,6 +72,8 @@ def bfs(problema):
     while fronteira:
         estado = fronteira.popleft()    # FIFO: tira o mais antigo
         metricas.explorados += 1
+        if traco is not None:
+            traco.append(estado)
 
         if problema.objetivo_atingido(estado):
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
@@ -82,7 +89,7 @@ def bfs(problema):
     return None, metricas
 
 
-def dfs(problema):
+def dfs(problema, traco=None):
     """Busca em Profundidade. Vai fundo em um ramo antes de retroceder.
     É rápida e gasta pouca memória, mas NÃO garante o melhor caminho."""
     tempo_inicial = time.perf_counter()
@@ -95,6 +102,8 @@ def dfs(problema):
     while fronteira:
         estado = fronteira.pop()        # LIFO: tira o mais recente
         metricas.explorados += 1
+        if traco is not None:
+            traco.append(estado)
 
         if problema.objetivo_atingido(estado):
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
@@ -110,7 +119,7 @@ def dfs(problema):
     return None, metricas
 
 
-def ucs(problema):
+def ucs(problema, traco=None):
     """Busca de Custo Uniforme. Expande sempre o nó de menor custo acumulado
     g(n). É ótima mesmo com custos variados (aqui, por causa da lama)."""
     tempo_inicial = time.perf_counter()
@@ -125,6 +134,8 @@ def ucs(problema):
     while fronteira:
         custo_atual, _, estado = heapq.heappop(fronteira)
         metricas.explorados += 1
+        if traco is not None:
+            traco.append(estado)
 
         # Pode haver entradas "obsoletas" no heap (achamos um caminho melhor
         # depois de inserir esta). Se for o caso, ignoramos.
@@ -149,7 +160,7 @@ def ucs(problema):
 
 # --- Buscas informadas (usam a heurística de Manhattan) --------------------
 
-def gulosa(problema):
+def gulosa(problema, traco=None):
     """Busca Gulosa (best-first). Expande o nó que PARECE mais perto do
     objetivo segundo h(n). É rápida, mas não considera o custo já gasto,
     então pode devolver um caminho pior que o ótimo."""
@@ -165,6 +176,8 @@ def gulosa(problema):
     while fronteira:
         _, _, estado = heapq.heappop(fronteira)
         metricas.explorados += 1
+        if traco is not None:
+            traco.append(estado)
 
         if problema.objetivo_atingido(estado):
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
@@ -181,7 +194,7 @@ def gulosa(problema):
     return None, metricas
 
 
-def a_estrela(problema):
+def a_estrela(problema, traco=None):
     """A*. Ordena a fronteira por f(n) = g(n) + h(n), equilibrando o custo já
     gasto (g) com a estimativa até o objetivo (h). Com heurística admissível,
     encontra o caminho ótimo geralmente expandindo bem menos nós que a UCS."""
@@ -199,6 +212,8 @@ def a_estrela(problema):
     while fronteira:
         _, custo_atual, _, estado = heapq.heappop(fronteira)
         metricas.explorados += 1
+        if traco is not None:
+            traco.append(estado)
 
         # Ignora entradas obsoletas (g pior do que o melhor já conhecido).
         if custo_atual > custo_ate.get(estado, float("inf")):
