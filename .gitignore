@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Saídas geradas (figuras/animações de experimentos)
+saidas/
+*.gif
+
+# Material do professor (mantemos só o enunciado versionado)
+slides_aula/
+
+# Sistema
+.DS_Store
