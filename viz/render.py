@@ -6,13 +6,15 @@ convergência, heatmap de nós expandidos) serão feitas com matplotlib na Parte
 """
 
 PASSO_CAMINHO = "."   # marca as células do caminho que não são A/B/C
+AGENTE = "@"          # posição atual do agente (usada no modo online)
 
 
-def desenhar_mapa(mapa, caminho=None) -> str:
-    """Devolve uma representação textual do mapa, opcionalmente com o caminho.
+def desenhar_mapa(mapa, caminho=None, agente=None) -> str:
+    """Devolve uma representação textual do mapa.
 
-    As células do caminho viram '.', preservando 'A', 'B' e 'C' por cima para
-    que continue legível onde o agente começa, termina e coleta.
+    - `caminho`: células visitadas viram '.', preservando 'A', 'B' e 'C'.
+    - `agente`: se informado, marca a posição atual com '@' (modo online).
+    No modo online, as células ainda desconhecidas aparecem como '?'.
     """
     no_caminho = set(caminho) if caminho else set()
     linhas_desenhadas = []
@@ -20,7 +22,9 @@ def desenhar_mapa(mapa, caminho=None) -> str:
         celulas = []
         for indice_coluna, caractere in enumerate(linha):
             posicao = (indice_linha, indice_coluna)
-            if posicao in no_caminho and caractere == " ":
+            if posicao == agente:
+                celulas.append(AGENTE)
+            elif posicao in no_caminho and caractere == " ":
                 celulas.append(PASSO_CAMINHO)
             else:
                 celulas.append(caractere)
@@ -28,5 +32,5 @@ def desenhar_mapa(mapa, caminho=None) -> str:
     return "\n".join(linhas_desenhadas)
 
 
-def imprimir_mapa(mapa, caminho=None) -> None:
-    print(desenhar_mapa(mapa, caminho))
+def imprimir_mapa(mapa, caminho=None, agente=None) -> None:
+    print(desenhar_mapa(mapa, caminho, agente))

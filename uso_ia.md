@@ -23,6 +23,9 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
 - Parte III: matriz de distâncias (reaproveitando o A*), função de custo da rota,
   Hill-Climbing, Simulated Annealing, vizinhança por inversão de trecho, gráfico
   de convergência e análise de sensibilidade (temperatura/resfriamento).
+- Parte IV: agente online com replanning A* (mapa interno, percepção de raio 1,
+  free-space assumption), métricas da seção 7.4, razão online/offline e mapa de
+  armadilha para evidenciar backtracking.
 
 ## 3. O que foi gerado/adaptado com apoio de IA
 
@@ -47,3 +50,5 @@ entendimento do grupo. **O grupo não entrega solução que não compreende.**
 - [ ] Por que o Hill-Climbing fica preso em mínimos locais.
 - [ ] Como o Simulated Annealing aceita pioras (exp(−Δ/T)) para escapar deles.
 - [ ] Efeito da temperatura inicial e da taxa de resfriamento na convergência.
+- [ ] O ciclo perceber→atualizar→planejar→agir e a free-space assumption.
+- [ ] Por que a razão online/offline pode ser > 1 (preço de não conhecer o mapa).
