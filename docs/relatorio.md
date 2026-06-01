@@ -70,6 +70,16 @@ desvio livre ao lado).
 
 **Mapa `exemplo.txt`:**
 
+```text
+##########
+#A  ~    #
+# ## ### #
+#  C ~   #
+# ## # # #
+#   ~  CB#
+##########
+```
+
 | Algoritmo | Sucesso | Custo | Passos | Explorados | Expandidos | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
 | BFS       | sim | 13 | 11 | 31 | 30 | 4 |
@@ -79,6 +89,13 @@ desvio livre ao lado).
 | A*        | sim | 13 | 11 | 31 | 30 | 5 |
 
 **Mapa `armadilha_gulosa.txt`:**
+
+```text
+##########
+#A~~~~~~B#
+#        #
+##########
+```
 
 | Algoritmo | Sucesso | Custo | Passos | Explorados | Expandidos | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
@@ -136,6 +153,18 @@ mapas/armadilha_gulosa.txt --animar`.
 
 ### 4.2 Resultados (mapa `coletas.txt`, 8 pontos)
 Ótimo global por força bruta (8! = 40320) = **32**. 30 execuções por método.
+
+```text
+###############
+#A   C   ~    #
+#  ~   C   ~  #
+#   C   ~   C #
+# ~   C   ~   #
+#      ~   C  #
+#   ~   C   ~ #
+#    ~   C   B#
+###############
+```
 
 | Método | Melhor | Pior | Médio | Tempo méd. | Iter. méd. | Sucesso |
 |--------|:------:|:----:|:-----:|:----------:|:----------:|:-------:|
@@ -205,6 +234,34 @@ como livre, anda **um** passo e replaneja. O agente conhece o tamanho do mapa e
 as posições de início e objetivo, mas **não** as paredes.
 
 ### 5.2 Resultados
+
+Os mapas abaixo são a verdade de campo (o agente *não* a enxerga de início — só
+o tamanho e as posições de `A` e `B`).
+
+**Mapa `exemplo.txt`** (mesmo da Parte II):
+
+```text
+##########
+#A  ~    #
+# ## ### #
+#  C ~   #
+# ## # # #
+#   ~  CB#
+##########
+```
+
+**Mapa `online_armadilha.txt`:**
+
+```text
+#######
+#A    #
+# ### #
+# ### #
+# ### #
+##### #
+#     #
+#B#####
+```
 
 | Mapa | Sucesso | Movimentos | Custo real | Reveladas | Revisitadas | Replanej. | Ótimo offline | Razão |
 |------|:-------:|:----------:|:----------:|:---------:|:-----------:|:---------:|:-------------:|:-----:|
