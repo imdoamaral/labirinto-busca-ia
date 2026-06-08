@@ -109,7 +109,12 @@ def dfs(problema, traco=None):
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
 
         metricas.expandidos += 1
-        for _acao, sucessor, _custo in problema.sucessores(estado):
+        # Empilhamos os sucessores em ordem REVERSA: como a pilha é LIFO, isso
+        # faz com que eles sejam desempilhados da esquerda para a direita — ou
+        # seja, na mesma ordem em que foram gerados (cima, baixo, esquerda,
+        # direita). É a convenção padrão de varredura da árvore de estados: o
+        # primeiro filho gerado é o primeiro a ser explorado.
+        for _acao, sucessor, _custo in reversed(list(problema.sucessores(estado))):
             if sucessor not in veio_de:
                 veio_de[sucessor] = estado
                 fronteira.append(sucessor)

@@ -15,7 +15,7 @@ replanejar.
 
 | Mapa | Sucesso | Movimentos | Custo real | Reveladas | Revisitadas | Replanej. | Ótimo offline | Razão |
 |------|:-------:|:----------:|:----------:|:---------:|:-----------:|:---------:|:-------------:|:-----:|
-| `exemplo.txt`          | sim | 11 | 13 | 37 | 0 | 11 | 13 | **1.00** |
+| `exemplo.txt`          | sim | 10 | 10 | 34 | 0 | 10 | 10 | **1.00** |
 | `online_armadilha.txt` | sim | 20 | 20 | 50 | 3 | 20 | 14 | **1.43** |
 
 A **razão online/offline** é a métrica central: 1.00 significa que o agente foi
@@ -43,7 +43,7 @@ só ao chegar perto deles — por isso apostou num caminho que não existia.
 ## 3. O mapa interno convergiu para o mapa real?
 
 Apenas **parcialmente**, na região explorada. No `online_armadilha.txt` foram
-reveladas 50 das 56 células; no `exemplo.txt`, 37 de 70. Células fora da
+reveladas 50 das 56 células; no `exemplo.txt`, 34 de 77. Células fora da
 trajetória permanecem '?' (ver o mapa interno final). Ou seja, o agente constrói
 um modelo **suficiente para chegar ao objetivo**, não um mapa completo.
 

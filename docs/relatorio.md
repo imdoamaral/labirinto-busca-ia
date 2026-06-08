@@ -1,13 +1,5 @@
 # Relatório Técnico — Agente Inteligente em Labirinto
 
-**Busca Clássica, Busca Local e Busca Online**
-Linguagem: Python · Domínio: labirinto em grade discreta
-
-Este relatório reúne a modelagem e os resultados das três partes do trabalho. As
-análises detalhadas de cada parte estão em `docs/analise_parte2.md`,
-`docs/analise_parte3.md` e `docs/analise_parte4.md`; aqui consolidamos tudo num
-único documento, com a comparação final entre as abordagens.
-
 > Reprodutibilidade: `python -m venv .venv && .venv/bin/pip install -r requirements.txt`,
 > depois `experimentos.py` (Parte II), `experimentos_local.py` (Parte III) e
 > `experimentos_online.py <mapa>` (Parte IV). O uso de IA generativa está
@@ -28,65 +20,72 @@ análises detalhadas de cada parte estão em `docs/analise_parte2.md`,
 O objetivo é um agente que resolve labirintos em grade sob três condições, no
 mesmo domínio: **mapa conhecido** (A → B), **múltiplos pontos de coleta**
 (visitar todos os C antes de B) e **mapa desconhecido** (explorar enquanto se
-move). A legenda dos mapas é: `#` parede, ` ` célula livre (custo 1), `~` lama
-(custo 3), `A` início, `B` objetivo, `C` ponto de coleta, `?` célula
-desconhecida (modo online). O terreno de lama foi acrescentado para que os
-custos variem e a comparação entre algoritmos sensíveis a custo (UCS, A*) e
-sensíveis a passos (BFS) fique evidente.
+move). 
 
-## 2. Parte I — Projeto do agente
+A legenda dos mapas é: `#` parede, `` célula livre (custo 1), `~` lama (custo 3), `A` início, `B` objetivo, `C` ponto de coleta, `?` célula desconhecida (modo online). 
+
+O terreno de lama foi acrescentado para que os custos variem e a comparação entre algoritmos sensíveis a custo (UCS, A*) e sensíveis a passos (BFS) fique evidente.
+
+## 2. Parte I - Projeto do agente
 
 ### 2.1 Modelagem PEAS
 - **Performance:** J = −α·custo do caminho − β·nós expandidos − γ·tempo de
   execução − δ·movimentos inválidos − ε·células revisitadas. Todos os termos são
   penalizações; quanto maior J, melhor o agente.
+
 - **Environment:** labirinto em grade, discreto, com células livres, lama,
   paredes, início, objetivo, pontos de coleta e regiões desconhecidas no modo
   online. É **totalmente observável** na busca clássica e **parcialmente
   observável** no modo online; **determinístico**, **estático**, **discreto** e
   de **agente único**.
+
 - **Actuators:** movimentos ortogonais A = {cima, baixo, esquerda, direita}.
+
 - **Sensors:** mapa inteiro (busca clássica) ou vizinhança local de raio 1
   (modo online).
 
 ### 2.2 Classificação do agente
 **Agente baseado em objetivos com modelo interno** (mínimo exigido): persegue o
-objetivo B e, no modo online, mantém e atualiza um modelo interno do mapa. Ao
-otimizar a função J, aproxima-se de um **agente baseado em utilidade**.
+objetivo B e, no modo online, mantém e atualiza um modelo interno do mapa.
 
 ## 3. Parte II — Busca clássica
 
 ### 3.1 Formulação formal
-Problema = ⟨S, A, T, s₀, G, c⟩: **S** posições livres (estado = (linha, coluna));
-**A** ações ortogonais; **T** vizinhos válidos (dentro da grade e sem parede);
-**s₀** célula A; **G** estado == B; **c** custo de entrar na célula de destino
-(1 livre, 3 lama). Heurística das buscas informadas: distância de **Manhattan**,
-**admissível** (nunca superestima, pois o menor custo por passo é 1).
+Problema = ⟨S, A, T, s₀, G, c⟩:
+
+- **S:** posições livres (estado = (linha, coluna));
+- **A:** ações ortogonais;
+- **T:** vizinhos válidos (dentro da grade e sem parede);
+- **s₀:** célula A; 
+- **G:** estado == B; 
+- **c:** custo de entrar na célula de destino
+(1 livre, 3 lama). 
+- **Heurística das buscas informadas:** distância de Manhattan,
 
 ### 3.2 Resultados
-Dois mapas: `exemplo.txt` (o caminho mais barato também é dos mais curtos) e
-`armadilha_gulosa.txt` (corredor reto de lama, curto em passos e caro, com um
-desvio livre ao lado).
+2 mapas: `exemplo.txt` (o mapa do enunciado, de **custo uniforme** — todos os
+algoritmos completos acham o ótimo) e `armadilha_gulosa.txt` (corredor reto de
+lama, curto em passos e caro, com um desvio livre ao lado).
 
 **Mapa `exemplo.txt`:**
 
 ```text
-##########
-#A  ~    #
-# ## ### #
-#  C ~   #
-# ## # # #
-#   ~  CB#
-##########
+###########
+#A   #    #
+# ## # ## #
+#    C   B#
+# ##   #  #
+#   C  #  #
+###########
 ```
 
-| Algoritmo | Sucesso | Custo | Passos | Explorados | Expandidos | Fronteira |
+| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (ms) | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 13 | 11 | 31 | 30 | 4 |
-| DFS       | sim | 31 | 25 | 26 | 25 | 6 |
-| UCS       | sim | 13 | 11 | 31 | 30 | 5 |
-| Gulosa    | sim | 13 | 11 | 12 | 11 | 5 |
-| A*        | sim | 13 | 11 | 31 | 30 | 5 |
+| BFS       | sim | 10 | 10 | 28 | 0.080 | 4 |
+| DFS       | sim | 18 | 18 | 22 | 0.061 | 7 |
+| UCS       | sim | 10 | 10 | 28 | 0.087 | 4 |
+| Gulosa    | sim | 10 | 10 | 10 | 0.035 | 9 |
+| A*        | sim | 10 | 10 | 14 | 0.050 | 7 |
 
 **Mapa `armadilha_gulosa.txt`:**
 
@@ -97,59 +96,81 @@ desvio livre ao lado).
 ##########
 ```
 
-| Algoritmo | Sucesso | Custo | Passos | Explorados | Expandidos | Fronteira |
+| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (ms) | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 19 | 7 | 15 | 14 | 2 |
-| DFS       | sim | 19 | 7 | 8  | 7  | 8 |
-| UCS       | sim | 9  | 9 | 15 | 14 | 4 |
-| Gulosa    | sim | 19 | 7 | 8  | 7  | 8 |
-| A*        | sim | 9  | 9 | 11 | 10 | 6 |
+| BFS       | sim | 19 | 7  | 14 | 0.050 | 2 |
+| DFS       | sim | 19 | 11 | 11 | 0.036 | 5 |
+| UCS       | sim | 9  | 9  | 14 | 0.049 | 4 |
+| Gulosa    | sim | 19 | 7  | 7  | 0.026 | 8 |
+| A*        | sim | 9  | 9  | 10 | 0.038 | 6 |
 
 ### 3.3 Análise (seção 5.4)
-1. **BFS** sempre acha o caminho com menos passos; só é ótima em custo com
-   custos uniformes (coincide no `exemplo`, falha no `armadilha`: 19 vs 9).
-2. **DFS** é rápida e econômica em memória, mas a qualidade não é garantida
-   (custo 31 vs 13 no `exemplo`).
-3. **UCS ≠ BFS** quando os custos variam: com a lama, UCS achou 9 (contornando)
-   e BFS achou 19 (reto).
-4. **Gulosa** é eficiente (poucos nós) mas pode ser subótima: ignora o custo e
-   entra na lama (19 vs 9).
-5. **A\*** une otimalidade e eficiência: custo ótimo (9) expandindo menos nós
-   que a UCS (10 vs 14).
-6. A heurística de **Manhattan é admissível** (nunca superestima), garantindo a
-   otimalidade do A*.
+Nas figuras: hachura azul = **células exploradas**, linha vermelha = **caminho devolvido**, bege = **lama** (`~`). Cada item mostra o algoritmo nos dois mapas — `exemplo` (custo uniforme) à esquerda e `armadilha_gulosa` à direita.
 
-### 3.4 Visualização da busca
-As figuras abaixo (geradas por `python gerar_figuras.py parte2`) mostram, no mapa
-`armadilha_gulosa.txt`, as **células exploradas** (hachura azul) e o **caminho
-final** (vermelho). O corredor reto entre `A` e `B` é de lama (`~`, em bege) —
-curto em passos, mas caro; logo abaixo há um desvio livre, mais longo em passos
-porém mais barato em custo.
+**1. BFS — ótima em passos, não em custo.** Acha sempre o caminho com **menos passos**; só é ótima em custo quando os movimentos custam o mesmo (coincide no `exemplo`, falha no `armadilha`: 19 vs 9).
 
-![Busca Gulosa no mapa armadilha](figuras/parte2/armadilha_gulosa_Gulosa.png)
+<p align="center">
+  <img src="figuras/parte2/exemplo_BFS.png" width="49%" alt="BFS no mapa exemplo">
+  <img src="figuras/parte2/armadilha_gulosa_BFS.png" width="49%" alt="BFS no mapa armadilha">
+</p>
 
-A **Gulosa** segue só a heurística e mergulha reto pela lama até `B`: explora
-pouquíssimas células (8), mas devolve um caminho de custo 19 — cai exatamente na
-armadilha descrita na análise 3.3.4.
+GIFs:
+[(exemplo)](figuras/parte2/exemplo_BFS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_BFS.gif)
 
-![Busca A* no mapa armadilha](figuras/parte2/armadilha_gulosa_Aestrela.png)
+**2. DFS — rápida, mas subótima.** Economiza memória (fronteira pequena), mas a qualidade não é garantida: é subótima nos dois mapas (custo 18 vs 10 no `exemplo`, 19 vs 9 no `armadilha`).
 
-O **A\*** leva em conta o custo já gasto: explora algumas células a mais (11)
-para "enxergar" que contornar pela faixa livre custa 9, e devolve o caminho
-ótimo (análise 3.3.5). Repare que a lama (bege) fica quase toda **inexplorada**.
-As versões animadas (GIF) de todos os algoritmos estão em `docs/figuras/parte2/`;
-para ver a exploração ao vivo no terminal: `python experimentos.py
-mapas/armadilha_gulosa.txt --animar`.
+<p align="center">
+  <img src="figuras/parte2/exemplo_DFS.png" width="49%" alt="DFS no mapa exemplo">
+  <img src="figuras/parte2/armadilha_gulosa_DFS.png" width="49%" alt="DFS no mapa armadilha">
+</p>
+
+GIFs:
+[(exemplo)](figuras/parte2/exemplo_DFS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_DFS.gif)
+
+**3. UCS ≠ BFS sob custo variável.** Quando os custos variam, as duas divergem: com a lama, a UCS achou **9** (contornando) e a BFS achou **19** (reto). É o par visual com a figura da BFS acima.
+
+<p align="center">
+  <img src="figuras/parte2/exemplo_UCS.png" width="49%" alt="UCS no mapa exemplo">
+  <img src="figuras/parte2/armadilha_gulosa_UCS.png" width="49%" alt="UCS no mapa armadilha">
+</p>
+
+GIFs:
+[(exemplo)](figuras/parte2/exemplo_UCS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_UCS.gif)
+
+**4. Gulosa — eficiente, porém enganável.** Expande pouquíssimos nós (corre na direção de `h`), mas pode ser subótima: ignora o custo já gasto e entra na lama (19 vs 9).
+
+<p align="center">
+  <img src="figuras/parte2/exemplo_Gulosa.png" width="49%" alt="Gulosa no mapa exemplo">
+  <img src="figuras/parte2/armadilha_gulosa_Gulosa.png" width="49%" alt="Gulosa no mapa armadilha">
+</p>
+
+GIFs:
+[(exemplo)](figuras/parte2/exemplo_Gulosa.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_Gulosa.gif)
+
+**5. A\* — equilíbrio entre qualidade e eficiência.** Une otimalidade e
+eficiência: custo ótimo (9) expandindo menos nós que a UCS (10 vs 14).
+
+<p align="center">
+  <img src="figuras/parte2/exemplo_Aestrela.png" width="49%" alt="A* no mapa exemplo">
+  <img src="figuras/parte2/armadilha_gulosa_Aestrela.png" width="49%" alt="A* no mapa armadilha">
+</p>
+
+GIFs:
+[(exemplo)](figuras/parte2/exemplo_Aestrela.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_Aestrela.gif)
+
+**6. Heurística de Manhattan — admissível.** Nunca superestima o custo restante (o menor custo por passo é 1), o que **garante a otimalidade do A\***.
+
+Para ver a exploração no terminal:
+`python experimentos.py mapas/[MAPA].txt --animar`.
 
 ## 4. Parte III — Busca local
 
 ### 4.1 Modelagem
 - **Representação (6.1):** permutação dos pontos de coleta; rota = A → ordem → B.
-- **Custo (6.2):** C(s) = d(A, ordem[0]) + Σ d(ordem[i], ordem[i+1]) +
-  d(ordem[-1], B), com d(X,Y) = menor caminho calculado por **A\*** (reaproveitado
-  da Parte II), considerando a lama.
-- **Vizinhança (6.4):** inversão de um trecho da ordem (2-opt) — desfaz
-  "cruzamentos" preservando boa parte da sequência.
+
+- **Custo (6.2):** C(s) = d(A, ordem[0]) + Σ d(ordem[i], ordem[i+1]) + d(ordem[-1], B), com d(X,Y) = menor caminho calculado por **A\*** (reaproveitado da Parte II), considerando a lama.
+
+- **Vizinhança (6.4):** inversão de um trecho da ordem (2-opt) — desfaz "cruzamentos" preservando boa parte da sequência.
 
 ### 4.2 Resultados (mapa `coletas.txt`, 8 pontos)
 Ótimo global por força bruta (8! = 40320) = **32**. 30 execuções por método.
@@ -241,13 +262,13 @@ o tamanho e as posições de `A` e `B`).
 **Mapa `exemplo.txt`** (mesmo da Parte II):
 
 ```text
-##########
-#A  ~    #
-# ## ### #
-#  C ~   #
-# ## # # #
-#   ~  CB#
-##########
+###########
+#A   #    #
+# ## # ## #
+#    C   B#
+# ##   #  #
+#   C  #  #
+###########
 ```
 
 **Mapa `online_armadilha.txt`:**
@@ -265,7 +286,7 @@ o tamanho e as posições de `A` e `B`).
 
 | Mapa | Sucesso | Movimentos | Custo real | Reveladas | Revisitadas | Replanej. | Ótimo offline | Razão |
 |------|:-------:|:----------:|:----------:|:---------:|:-----------:|:---------:|:-------------:|:-----:|
-| `exemplo.txt`          | sim | 11 | 13 | 37 | 0 | 11 | 13 | **1.00** |
+| `exemplo.txt`          | sim | 10 | 10 | 34 | 0 | 10 | 10 | **1.00** |
 | `online_armadilha.txt` | sim | 20 | 20 | 50 | 3 | 20 | 14 | **1.43** |
 
 A figura mostra o **mapa interno** ao final da execução em `online_armadilha.txt`:
