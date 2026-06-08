@@ -47,34 +47,6 @@ Arquivo obrigatório (seção 10.1 do enunciado). Documenta de forma honesta com
 7. "monte o relatorio.md reunindo as análises"
 8. "implemente o bônus do Algoritmo Genético"
 
-**Visualização e relatório**
-
-9. "Com relaçao ao arquivo docs/relatorio.md: vc adicionou 2 graficos sem
-   contexto proximo, adicione ao menos um pequeno texto antes/depois da imagem
-   indicando o que esta acontecendo no grafico/como interpretar"
-10. "como eu faço pra visualizar a animaçao dos agentes em cada busca e como eu
-    gero uma imagem estatica do percurso pra poder colocar no relatorio final?
-    Acredito que isso va ser bastante agregador no projeto"
-11. "na figura 'gulosa - armadilha_gulosa' o texto acima menciona que a lama é
-    bege e as celulas exploradas sao azuis, porem o corredor reto entre A e B
-    esta totalmente cinza, com exceçao das celulas dos pontos de inicio e
-    objetivo. / na figura 'a* - 'armadilha_gulosa' a celula imediatamente a a
-    direita do ponto de inicio A esta na cor cinza - quando na verdade deveria
-    estar na cor bege (lama)"
-12. "em relatorio.md: tem como inserir os respectivos mapas (em arte ascii) mesmo
-    antes das tabelas? O que vc acha da sugestao?"
-13. "O relatorio diz: \"A Gulosa segue só a heurística e mergulha reto pela lama
-    até B: explora pouquíssimas células (8)...\" - que heuristica é essa? Achei
-    que a busca gulosa nao olhasse heuristica"
-
-**Estudo para a defesa**
-
-14. "Como vc sugere que eu aprenda os topicos necessarios descritos no final do
-    documento uso_ia.md? Eu pensei em flashcard, repetiçao espaçada, pensei em
-    ate mesmo escrever o pseudocodigo dos algoritmos de busca antes de sua
-    implementaçao principal, para facilitar entendimento. O que vc sugere nesse
-    caso? A apresentaçao sera daqui uma semana."
-
 **Revisão final (consistência com o enunciado)**
 
 15. "Estava revisando o relatorio final e observei que o exemplo de labirinto

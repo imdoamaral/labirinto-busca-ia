@@ -107,7 +107,9 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 ### 3.3 Análise (seção 5.4)
 Nas figuras: hachura azul = **células exploradas**, linha vermelha = **caminho devolvido**, bege = **lama** (`~`). Cada item mostra o algoritmo nos dois mapas — `exemplo` (custo uniforme) à esquerda e `armadilha_gulosa` à direita.
 
-**1. BFS — ótima em passos, não em custo.** Acha sempre o caminho com **menos passos**; só é ótima em custo quando os movimentos custam o mesmo (coincide no `exemplo`, falha no `armadilha`: 19 vs 9).
+**1. BFS encontrou o menor caminho? Em quais condições isso ocorre?** 
+
+*Sim, encontrou.* Mas só é ótima em custo quando os movimentos custam o mesmo (custo uniforme): aí o caminho com menos passos também é o mais barato — coincide no `exemplo` (BFS = UCS = 10) e falha no `armadilha` (19 vs 9 do ótimo).
 
 <p align="center">
   <img src="figuras/parte2/exemplo_BFS.png" width="49%" alt="BFS no mapa exemplo">
@@ -117,7 +119,9 @@ Nas figuras: hachura azul = **células exploradas**, linha vermelha = **caminho 
 GIFs:
 [(exemplo)](figuras/parte2/exemplo_BFS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_BFS.gif)
 
-**2. DFS — rápida, mas subótima.** Economiza memória (fronteira pequena), mas a qualidade não é garantida: é subótima nos dois mapas (custo 18 vs 10 no `exemplo`, 19 vs 9 no `armadilha`).
+**2. DFS encontrou solução rapidamente? A solução foi boa?** 
+
+*Rápido sim, boa não.* Encontrou uma solução depressa e com **pouca memória** (fronteira de só 7 e 5 nós), pois mergulha num ramo até o fim antes de abrir outros. Mas a qualidade não é garantida: foi subótima nos dois mapas (custo 18 vs 10 no `exemplo`, 19 vs 9 no `armadilha`).
 
 <p align="center">
   <img src="figuras/parte2/exemplo_DFS.png" width="49%" alt="DFS no mapa exemplo">
@@ -127,7 +131,9 @@ GIFs:
 GIFs:
 [(exemplo)](figuras/parte2/exemplo_DFS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_DFS.gif)
 
-**3. UCS ≠ BFS sob custo variável.** Quando os custos variam, as duas divergem: com a lama, a UCS achou **9** (contornando) e a BFS achou **19** (reto). É o par visual com a figura da BFS acima.
+**3. UCS diferiu de BFS quando os custos variaram?** 
+
+*Sim, divergiram.* Quando os custos variam, as duas divergem: com a lama, a UCS achou **9** (contornando) e a BFS achou **19** (reto). É o par visual com a figura da BFS acima.
 
 <p align="center">
   <img src="figuras/parte2/exemplo_UCS.png" width="49%" alt="UCS no mapa exemplo">
@@ -137,7 +143,9 @@ GIFs:
 GIFs:
 [(exemplo)](figuras/parte2/exemplo_UCS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_UCS.gif)
 
-**4. Gulosa — eficiente, porém enganável.** Expande pouquíssimos nós (corre na direção de `h`), mas pode ser subótima: ignora o custo já gasto e entra na lama (19 vs 9).
+**4. A busca gulosa foi eficiente? Foi ótima?** 
+
+*Eficiente sim; ótima não.* Expande pouquíssimos nós (corre na direção de `h`), mas pode ser subótima: ignora o custo já gasto e entra na lama (19 vs 9).
 
 <p align="center">
   <img src="figuras/parte2/exemplo_Gulosa.png" width="49%" alt="Gulosa no mapa exemplo">
@@ -147,8 +155,9 @@ GIFs:
 GIFs:
 [(exemplo)](figuras/parte2/exemplo_Gulosa.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_Gulosa.gif)
 
-**5. A\* — equilíbrio entre qualidade e eficiência.** Une otimalidade e
-eficiência: custo ótimo (9) expandindo menos nós que a UCS (10 vs 14).
+**5. A\* equilibrou qualidade da solução e eficiência?** 
+
+*Sim, equilibrou.* Une otimalidade e eficiência: custo ótimo (9) expandindo menos nós que a UCS (10 vs 14).
 
 <p align="center">
   <img src="figuras/parte2/exemplo_Aestrela.png" width="49%" alt="A* no mapa exemplo">
@@ -158,7 +167,9 @@ eficiência: custo ótimo (9) expandindo menos nós que a UCS (10 vs 14).
 GIFs:
 [(exemplo)](figuras/parte2/exemplo_Aestrela.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_Aestrela.gif)
 
-**6. Heurística de Manhattan — admissível.** Nunca superestima o custo restante (o menor custo por passo é 1), o que **garante a otimalidade do A\***.
+**6. A heurística utilizada é admissível? Justifique.**
+
+*Sim, é admissível.* Nunca superestima o custo restante (o menor custo por passo é 1), o que **garante a otimalidade do A\***.
 
 Para ver a exploração no terminal:
 `python experimentos.py mapas/[MAPA].txt --animar`.
@@ -193,32 +204,27 @@ Para ver a exploração no terminal:
 | Simulated Annealing       | 32 | 32 | 32.0 | 6.32 ms | 2297 | 100% |
 | Algoritmo Genético (bônus)| 32 | 32 | 32.0 | 38.6 ms | 100  | 100% |
 
-A figura a seguir mostra a **rota ótima** (custo 32) desenhada no mapa: o agente
-sai de `A`, visita todos os pontos de coleta `C` (laranja) na ordem que minimiza
-o custo total e termina em `B`. É essa permutação que os três métodos procuram —
-o desafio é achá-la entre as 8! = 40320 ordens possíveis.
-
 ![Rota ótima das coletas](figuras/parte3/rota_otima.png)
 
-<br>
+*Rota de custo 32: de `A`, visita todos os `C` na ordem que minimiza o custo
+total e termina em `B` — a permutação que os métodos procuram entre as 8! = 40320
+possíveis.*
 
-O gráfico abaixo mostra a evolução do **melhor custo encontrado ao longo das
-iterações**. Contraste: o
-Hill-Climbing despenca quase verticalmente e estaciona em poucas iterações
-(converge rápido, mas arrisca parar em um mínimo local), enquanto o Simulated
-Annealing desce em "degraus" — cada patamar é uma melhora aceita — e só atinge
-o ótimo (32) por volta da iteração 770, graças à aceitação ocasional de pioras.
+### 4.3 Análise (seção 6.6)
+
+**1. Hill-Climbing ficou preso em mínimo local?**
+
+*Sim.* Sucesso de só 73%: em parte das execuções parou num ótimo local (pior caso custo 38, contra 32 do ótimo), pois só aceita vizinhos melhores e não tem como sair de um vale.
+
+**2. Simulated Annealing encontrou soluções melhores?**
+
+*Sim.* Atingiu o ótimo (32) em 100% das execuções, porque aceita pioras com probabilidade exp(−Δ/T) e assim escapa dos mínimos locais que prendem o HC.
 
 ![Convergência da busca local](figuras/convergencia_local.png)
 
-O Algoritmo Genético (bônus) tem dinâmica distinta: o eixo X é a **geração**, não
-a iteração individual. O melhor custo da população cai rapidamente nas primeiras
-gerações e estabiliza no ótimo (32) por volta da geração 7, permanecendo estável
-até o fim por causa do elitismo (a melhor solução nunca é perdida).
+*Curva iteração × melhor custo: o HC despenca e estaciona cedo (rápido, mas pode travar num mínimo local); o SA desce em "degraus" — cada patamar é uma piora aceita — e só fecha o ótimo (32) por volta da iteração 770.*
 
-![Convergência do Algoritmo Genético](figuras/convergencia_ga.png)
-
-**Sensibilidade do SA (taxa de sucesso em atingir o ótimo):**
+**Sensibilidade do SA** (taxa de sucesso em atingir o ótimo):
 
 | Temp. inicial | Resfr. 0.90 | Resfr. 0.99 | Resfr. 0.999 |
 |:-------------:|:-----------:|:-----------:|:------------:|
@@ -227,24 +233,27 @@ até o fim por causa do elitismo (a melhor solução nunca é perdida).
 | 100   | 70% | 100% | 100% |
 | 1000  | 70% | 100% | 100% |
 
-### 4.3 Análise (seção 6.6)
-1. **Hill-Climbing fica preso em mínimo local** (sucesso 73%; pior 38 vs ótimo 32).
-2. **Simulated Annealing** encontra soluções melhores (100%), aceitando pioras
-   com probabilidade exp(−Δ/T) para escapar dos mínimos.
-3. **Temperatura inicial:** efeito secundário; só ajuda quando o resfriamento é
-   rápido (com 0.90, subir T₀ de 1 para 100 elevou o sucesso de 53% para 70%).
-4. **Taxa de resfriamento:** fator dominante; rápida (0.90) → 53–70%; lenta
-   (0.99/0.999) → 100%, ao custo de mais iterações.
-5. A busca local **não** encontrou sempre o ótimo (HC não; SA sim, se bem
-   parametrizado). Em geral não há garantia — aqui confirmamos por força bruta.
-6. **Compromisso tempo × qualidade:** HC é ~35× mais rápido porém pior; SA é
-   lento e ótimo. Uma alternativa barata é HC com vários reinícios aleatórios.
+**3. Como a temperatura inicial influenciou os resultados?**
 
-**Bônus — Algoritmo Genético** (`parte3_local/genetico.py`): abordagem
-populacional com seleção por torneio, cruzamento por ordem (OX), mutação por
-troca e elitismo. Atingiu o ótimo (32) em 100% das execuções, convergindo por
-volta da geração 7, mas é o mais caro em tempo (~38.6 ms) por avaliar a
-população inteira a cada geração.
+*Efeito secundário.* Só pesa quando o resfriamento é rápido: com 0.90, subir T₀ de 1 para 100 elevou o sucesso de 53% para 70%. Com resfriamento lento (0.99/0.999) o sucesso já é 100%, independentemente de T₀.
+
+**4. Como a taxa de resfriamento afetou a convergência?**
+
+*Foi o fator dominante.* Resfriamento rápido (0.90) → 53–70% de sucesso; lento (0.99/0.999) → 100%, ao custo de muito mais iterações (o SA chega a ~2297 em média).
+
+**5. A busca local encontrou sempre a solução ótima?**
+
+*Nem sempre.* O HC não; o SA sim, quando bem parametrizado. Em geral não há garantia de otimalidade — aqui só sabemos que 32 é o ótimo porque foi confirmado por força bruta sobre as 8! = 40320 permutações.
+
+**6. Qual foi o compromisso entre tempo e qualidade?**
+
+*Velocidade × qualidade.* O HC é ~35× mais rápido (0.18 ms) porém arrisca parar num ótimo local; o SA é lento (6.32 ms) mas atinge o ótimo. Um meio-termo barato é rodar HC com vários reinícios aleatórios.
+
+**Bônus — Algoritmo Genético** (`parte3_local/genetico.py`): abordagem populacional (seleção por torneio, cruzamento por ordem OX, mutação por troca e elitismo). Atingiu o ótimo (32) em 100% das execuções, convergindo por volta da geração 7, mas é o mais caro em tempo (~38.6 ms) por avaliar a população inteira a cada geração.
+
+![Convergência do Algoritmo Genético](figuras/convergencia_ga.png)
+
+*Eixo X é a geração: o melhor custo cai nas primeiras gerações e estabiliza no ótimo (32) por volta da geração 7, mantido pelo elitismo.*
 
 ## 5. Parte IV — Busca online
 
@@ -289,50 +298,43 @@ o tamanho e as posições de `A` e `B`).
 | `exemplo.txt`          | sim | 10 | 10 | 34 | 0 | 10 | 10 | **1.00** |
 | `online_armadilha.txt` | sim | 20 | 20 | 50 | 3 | 20 | 14 | **1.43** |
 
-A figura mostra o **mapa interno** ao final da execução em `online_armadilha.txt`:
-o terreno em cinza-claro nunca foi revelado (`?`), e a linha vermelha é a
-trajetória real. Dá para ver o agente descer reto pela suposição otimista,
-bater num **beco sem saída** e ter de voltar para contornar — é esse desvio que
-eleva a razão online/offline a 1.43. O GIF passo a passo (revelando o mapa a cada
-movimento) está em `docs/figuras/parte4/online.gif`; ao vivo:
-`python experimentos_online.py mapas/online_armadilha.txt --animar`.
+### 5.3 Análise (seção 7.5)
+
+**1. O agente online tomou decisões subótimas? Por quê?**
+
+*Sim, quando a suposição otimista falha.* No `armadilha`, assumir o desconhecido como livre fez o agente descer reto numa coluna que terminava em **beco sem saída**; ao bater na parede teve de voltar e contornar (razão 1.43). No `exemplo`, a suposição coincidiu com a realidade e não houve perda (razão 1.00). A subotimalidade vem de **agir sobre uma suposição otimista** antes de conhecer os obstáculos.
 
 ![Mapa interno final da busca online](figuras/parte4/online_final.png)
 
-### 5.3 Análise (seção 7.5)
-1. **Decisões subótimas** acontecem quando a suposição otimista falha: no
-   `armadilha` o agente desceu reto num beco e teve de contornar (razão 1.43);
-   no `exemplo` a suposição coincidiu (razão 1.00).
-2. **Faltava** ao agente a localização das paredes além do raio de percepção.
-3. O **mapa interno converge só parcialmente** (células fora da rota ficam `?`):
-   o agente constrói um modelo suficiente para chegar, não completo.
-4. **Revisitas** são poucas e concentradas nos backtrackings (0 e 3).
-5. **Melhorar a exploração:** aumentar o raio de percepção, supor o desconhecido
-   menos otimista, memorizar becos, usar replanejamento incremental (D* Lite).
-6. **Diferença para a busca clássica:** a clássica planeja uma vez com o mapa
-   completo; a online intercala perceber → planejar → agir, descobrindo o mapa e
-   pagando a razão online/offline ≥ 1 pelo desconhecimento.
+*Mapa interno ao fim da execução no `armadilha`: o cinza-claro nunca foi revelado (`?`) e a linha vermelha é a trajetória real — vê-se a descida otimista, o beco e o desvio que eleva a razão a 1.43. Passo a passo no GIF `docs/figuras/parte4/online.gif`.*
+
+**2. Quais informações faltavam ao agente?**
+
+*A localização das paredes* além do seu raio de percepção (raio 1). Ele conhecia o tamanho do mapa e as posições de `A` e `B`, mas só descobria os obstáculos ao chegar perto — por isso apostou num caminho que não existia.
+
+**3. O mapa interno convergiu para o mapa real?**
+
+*Só parcialmente*, na região explorada: 50 de 56 células reveladas no `armadilha` e 34 de 77 no `exemplo`. Células fora da trajetória permanecem `?` (ver figura acima). O agente constrói um modelo suficiente para chegar ao objetivo, não um mapa completo.
+
+**4. O agente revisitou muitas células?**
+
+*Poucas.* 0 revisitas no `exemplo` e 3 no `armadilha`, concentradas no backtracking ao descobrir o beco. Como percebe os vizinhos antes de agir, ele raramente refaz caminho fora dos retornos.
+
+**5. Como melhorar a exploração?**
+
+*Várias frentes:* aumentar o raio de percepção (revela mais por passo), supor o desconhecido de forma menos otimista, memorizar becos sem saída e usar replanejamento incremental (D\* Lite) ou LRTA\*, mais eficientes que recalcular o A\* do zero a cada passo.
+
+**6. O que diferencia busca online de busca clássica?**
+
+*Quando a informação chega.* A clássica planeja **uma vez** com o mapa completo e segue o caminho ótimo; a online intercala **perceber → planejar → agir**, descobrindo o mapa enquanto se move. Por isso pode tomar decisões subótimas e paga a razão online/offline ≥ 1 — o "preço" de não conhecer o ambiente.
 
 ## 6. Conclusão comparativa
 
 As três abordagens resolvem o mesmo domínio com compromissos distintos:
 
-- **Busca clássica** (mapa conhecido): com informação completa, o **A\*** é a
-  melhor escolha — ótimo e eficiente. BFS/UCS são ótimos em condições
-  específicas (passos vs custo), DFS é barata mas fraca, e a Gulosa é rápida
-  porém arriscada.
-- **Busca local** (otimização da ordem de coleta): quando o espaço de soluções é
-  grande demais para busca exaustiva, a busca local entrega boas soluções
-  rapidamente. O **Simulated Annealing** supera o Hill-Climbing por escapar de
-  mínimos locais, controlando o compromisso tempo × qualidade pela taxa de
-  resfriamento. O **Algoritmo Genético** (bônus) também alcança o ótimo, com a
-  abordagem populacional ao custo de mais tempo.
-- **Busca online** (mapa desconhecido): sem informação completa, o agente paga um
-  preço (razão ≥ 1) por descobrir o mapa enquanto age. O **replanning A\***
-  reaproveita a busca clássica e mantém esse preço baixo quando o ambiente é
-  "benigno", mas sofre com becos não previstos.
+- **Busca clássica** (mapa conhecido): com informação completa, o **A\*** é a melhor escolha — ótimo e eficiente. BFS/UCS são ótimos em condições específicas (passos vs custo), DFS é barata mas fraca, e a Gulosa é rápida porém arriscada.
 
-O fio condutor é o papel da **informação**: quanto mais o agente sabe de
-antemão, mais perto do ótimo ele chega — da otimalidade garantida da busca
-clássica, passando pela aproximação controlada da busca local, até o custo
-inevitável da exploração na busca online.
+- **Busca local** (otimização da ordem de coleta): quando o espaço de soluções é grande demais para busca exaustiva, a busca local entrega boas soluções rapidamente. O **Simulated Annealing** supera o Hill-Climbing por escapar de mínimos locais, controlando o compromisso tempo × qualidade pela taxa de resfriamento. O **Algoritmo Genético** (bônus) também alcança o ótimo, com a
+  abordagem populacional ao custo de mais tempo.
+
+- **Busca online** (mapa desconhecido): sem informação completa, o agente paga um preço (razão ≥ 1) por descobrir o mapa enquanto age. O **replanning A\*** reaproveita a busca clássica e mantém esse preço baixo quando o ambiente é "benigno", mas sofre com becos não previstos. O fio condutor é o papel da **informação**: quanto mais o agente sabe de antemão, mais perto do ótimo ele chega — da otimalidade garantida da busca clássica, passando pela aproximação controlada da busca local, até o custo inevitável da exploração na busca online.
