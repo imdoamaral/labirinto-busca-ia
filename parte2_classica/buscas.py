@@ -13,13 +13,26 @@ em que os nós são explorados (retirados da fronteira). É usado só pela camad
 visualização; por padrão (None) não há custo algum, então as chamadas em massa
 da Parte III e do modo online não são afetadas.
 
-Todas as buscas seguem o mesmo esqueleto e diferem apenas na ESTRUTURA DA
-FRONTEIRA, que é o que define a ordem de visita dos nós:
+Todas as buscas seguem o MESMO ESQUELETO geral apresentado em aula:
+    (1) inicializar a fronteira com o estado inicial;
+    (2) selecionar um nó da fronteira;
+    (3) testar se é objetivo;
+    (4) expandir sucessores;
+    (5) inserir sucessores na fronteira;
+    (6) repetir até sucesso ou falha.
+Esses seis passos estão marcados com comentários "# (n) ..." em cada função.
+
+O que MUDA de um algoritmo para o outro é a ESTRATÉGIA DE BUSCA — a regra que
+escolhe o próximo nó (passo 2), e ela se materializa na ESTRUTURA DA FRONTEIRA:
     BFS    -> fila (FIFO)                  | collections.deque
     DFS    -> pilha (LIFO)                 | lista usada como pilha
     UCS    -> fila de prioridade por g(n)  | heapq
     Gulosa -> fila de prioridade por h(n)  | heapq
     A*     -> fila de prioridade por f=g+h | heapq
+Uma ressalva à ideia de que "só a fronteira muda": as buscas ótimas (UCS e A*)
+acrescentam um detalhe ao passo 5 — só inserem um sucessor se for por um caminho
+de custo menor que o já conhecido (relaxação), e ignoram entradas obsoletas no
+passo 2. BFS/DFS/Gulosa usam a regra mais simples "não reinserir já alcançados".
 """
 import time
 import heapq
@@ -65,24 +78,24 @@ def bfs(problema, traco=None):
     tempo_inicial = time.perf_counter()
     metricas = Metricas()
 
-    fronteira = deque([problema.inicio])
+    fronteira = deque([problema.inicio])   # (1) inicializa a fronteira com o estado inicial
     veio_de = {problema.inicio: None}   # também faz o papel de "já alcançados"
     metricas.fronteira_max = 1
 
-    while fronteira:
-        estado = fronteira.popleft()    # FIFO: tira o mais antigo
+    while fronteira:                    # (6) repete até sucesso ou falha (fronteira vazia)
+        estado = fronteira.popleft()    # (2) seleciona um nó — FIFO: tira o mais antigo
         metricas.explorados += 1
         if traco is not None:
             traco.append(estado)
 
-        if problema.objetivo_atingido(estado):
+        if problema.objetivo_atingido(estado):   # (3) testa se é objetivo
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
 
         metricas.expandidos += 1
-        for _acao, sucessor, _custo in problema.sucessores(estado):
+        for _acao, sucessor, _custo in problema.sucessores(estado):   # (4) expande sucessores
             if sucessor not in veio_de:
                 veio_de[sucessor] = estado
-                fronteira.append(sucessor)
+                fronteira.append(sucessor)       # (5) insere o sucessor na fronteira
         metricas.fronteira_max = max(metricas.fronteira_max, len(fronteira))
 
     metricas.tempo = time.perf_counter() - tempo_inicial
@@ -95,29 +108,29 @@ def dfs(problema, traco=None):
     tempo_inicial = time.perf_counter()
     metricas = Metricas()
 
-    fronteira = [problema.inicio]       # lista usada como pilha (LIFO)
+    fronteira = [problema.inicio]       # (1) inicializa a fronteira (lista usada como pilha LIFO)
     veio_de = {problema.inicio: None}
     metricas.fronteira_max = 1
 
-    while fronteira:
-        estado = fronteira.pop()        # LIFO: tira o mais recente
+    while fronteira:                    # (6) repete até sucesso ou falha (fronteira vazia)
+        estado = fronteira.pop()        # (2) seleciona um nó — LIFO: tira o mais recente
         metricas.explorados += 1
         if traco is not None:
             traco.append(estado)
 
-        if problema.objetivo_atingido(estado):
+        if problema.objetivo_atingido(estado):   # (3) testa se é objetivo
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
 
         metricas.expandidos += 1
-        # Empilhamos os sucessores em ordem REVERSA: como a pilha é LIFO, isso
-        # faz com que eles sejam desempilhados da esquerda para a direita — ou
-        # seja, na mesma ordem em que foram gerados (cima, baixo, esquerda,
-        # direita). É a convenção padrão de varredura da árvore de estados: o
-        # primeiro filho gerado é o primeiro a ser explorado.
+        # (4) expande sucessores. Empilhamos em ordem REVERSA: como a pilha é
+        # LIFO, isso faz com que sejam desempilhados na mesma ordem em que foram
+        # gerados (a convenção de ACOES: direita, esquerda, baixo, cima). Ou
+        # seja, o primeiro filho gerado é o primeiro a ser explorado. Como a
+        # horizontal vem antes da vertical, a DFS corre reto até a parede.
         for _acao, sucessor, _custo in reversed(list(problema.sucessores(estado))):
             if sucessor not in veio_de:
                 veio_de[sucessor] = estado
-                fronteira.append(sucessor)
+                fronteira.append(sucessor)       # (5) insere o sucessor na fronteira
         metricas.fronteira_max = max(metricas.fronteira_max, len(fronteira))
 
     metricas.tempo = time.perf_counter() - tempo_inicial
@@ -131,13 +144,14 @@ def ucs(problema, traco=None):
     metricas = Metricas()
 
     ordem = count()                     # desempate estável quando os custos empatam
+    # (1) inicializa a fronteira (fila de prioridade por g) com o estado inicial.
     fronteira = [(0, next(ordem), problema.inicio)]   # (g, ordem, estado)
     custo_ate = {problema.inicio: 0}    # melhor g(n) conhecido para cada estado
     veio_de = {problema.inicio: None}
     metricas.fronteira_max = 1
 
-    while fronteira:
-        custo_atual, _, estado = heapq.heappop(fronteira)
+    while fronteira:                    # (6) repete até sucesso ou falha (fronteira vazia)
+        custo_atual, _, estado = heapq.heappop(fronteira)   # (2) seleciona o nó de menor g
         metricas.explorados += 1
         if traco is not None:
             traco.append(estado)
@@ -147,12 +161,13 @@ def ucs(problema, traco=None):
         if custo_atual > custo_ate.get(estado, float("inf")):
             continue
 
-        if problema.objetivo_atingido(estado):
+        if problema.objetivo_atingido(estado):   # (3) testa se é objetivo
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
 
         metricas.expandidos += 1
-        for _acao, sucessor, custo in problema.sucessores(estado):
+        for _acao, sucessor, custo in problema.sucessores(estado):   # (4) expande sucessores
             novo_custo = custo_atual + custo
+            # (5) insere na fronteira SÓ se achamos um caminho mais barato (relaxação).
             if novo_custo < custo_ate.get(sucessor, float("inf")):
                 custo_ate[sucessor] = novo_custo
                 veio_de[sucessor] = estado
@@ -174,24 +189,25 @@ def gulosa(problema, traco=None):
 
     ordem = count()
     inicio = problema.inicio
+    # (1) inicializa a fronteira (fila de prioridade por h) com o estado inicial.
     fronteira = [(problema.heuristica(inicio), next(ordem), inicio)]  # (h, ordem, estado)
     veio_de = {inicio: None}
     metricas.fronteira_max = 1
 
-    while fronteira:
-        _, _, estado = heapq.heappop(fronteira)
+    while fronteira:                    # (6) repete até sucesso ou falha (fronteira vazia)
+        _, _, estado = heapq.heappop(fronteira)   # (2) seleciona o nó de menor h (mais perto, segundo a estimativa)
         metricas.explorados += 1
         if traco is not None:
             traco.append(estado)
 
-        if problema.objetivo_atingido(estado):
+        if problema.objetivo_atingido(estado):   # (3) testa se é objetivo
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
 
         metricas.expandidos += 1
-        for _acao, sucessor, _custo in problema.sucessores(estado):
+        for _acao, sucessor, _custo in problema.sucessores(estado):   # (4) expande sucessores
             if sucessor not in veio_de:
                 veio_de[sucessor] = estado
-                heapq.heappush(fronteira,
+                heapq.heappush(fronteira,                              # (5) insere o sucessor na fronteira
                                (problema.heuristica(sucessor), next(ordem), sucessor))
         metricas.fronteira_max = max(metricas.fronteira_max, len(fronteira))
 
@@ -208,14 +224,15 @@ def a_estrela(problema, traco=None):
 
     ordem = count()
     inicio = problema.inicio
+    # (1) inicializa a fronteira (fila de prioridade por f=g+h) com o estado inicial.
     # Cada entrada guarda (f, g, ordem, estado): f para priorizar, g para o custo real.
     fronteira = [(problema.heuristica(inicio), 0, next(ordem), inicio)]
     custo_ate = {inicio: 0}
     veio_de = {inicio: None}
     metricas.fronteira_max = 1
 
-    while fronteira:
-        _, custo_atual, _, estado = heapq.heappop(fronteira)
+    while fronteira:                    # (6) repete até sucesso ou falha (fronteira vazia)
+        _, custo_atual, _, estado = heapq.heappop(fronteira)   # (2) seleciona o nó de menor f
         metricas.explorados += 1
         if traco is not None:
             traco.append(estado)
@@ -224,12 +241,13 @@ def a_estrela(problema, traco=None):
         if custo_atual > custo_ate.get(estado, float("inf")):
             continue
 
-        if problema.objetivo_atingido(estado):
+        if problema.objetivo_atingido(estado):   # (3) testa se é objetivo
             return _finalizar(problema, veio_de, estado, metricas, tempo_inicial)
 
         metricas.expandidos += 1
-        for _acao, sucessor, custo in problema.sucessores(estado):
+        for _acao, sucessor, custo in problema.sucessores(estado):   # (4) expande sucessores
             novo_custo = custo_atual + custo
+            # (5) insere na fronteira SÓ se achamos um caminho mais barato (relaxação).
             if novo_custo < custo_ate.get(sucessor, float("inf")):
                 custo_ate[sucessor] = novo_custo
                 veio_de[sucessor] = estado

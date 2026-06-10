@@ -26,6 +26,17 @@ A legenda dos mapas é: `#` parede, `` célula livre (custo 1), `~` lama (custo 
 
 O terreno de lama foi acrescentado para que os custos variem e a comparação entre algoritmos sensíveis a custo (UCS, A*) e sensíveis a passos (BFS) fique evidente.
 
+### 1.1 Diferenças em relação à implementação de referência
+Comparando a nossa implementação da busca clássica com a de referência da disciplina, há quatro decisões conscientes em que divergimos — todas justificadas adiante na Parte II:
+
+- **Custo variável (lama).** A referência trata todo movimento com **custo unitário** e qualquer caractere não-`A`/`B`/espaço como parede (a lama `~` viraria muro). Nós modelamos a lama com custo 3 (`custo_entrada`), o que é o que torna possível **UCS ≠ BFS** e a "armadilha gulosa" (seção 3.3).
+
+- **Ordem de varredura dos vizinhos.** A referência expande na ordem vertical-primeiro (`cima, baixo, esquerda, direita`); nós adotamos **horizontal-primeiro** (`direita, esquerda, baixo, cima`) para que a DFS "corra reto até a parede" antes de desviar, deixando a visualização mais intuitiva em corredores horizontais.
+
+- **A\* puro vs. ponderado.** A referência usa **Weighted A\*** (peso `w=2` por padrão, mais rápido porém **não-ótimo**); nós usamos **A\* puro** (`w=1`), garantindo otimalidade com a heurística admissível.
+
+- **Arquitetura e métricas.** Separamos *problema* (`core/problema.py`) de *estratégia de busca* (`parte2_classica/buscas.py`) — o que permite reaproveitar `ProblemaLabirinto` nas Partes III e IV — e medimos também **custo, tempo e fronteira máxima**, além de nós explorados/expandidos.
+
 ## 2. Parte I - Projeto do agente
 
 ### 2.1 Modelagem PEAS
@@ -81,11 +92,11 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 
 | Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (ms) | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 10 | 10 | 28 | 0.080 | 4 |
-| DFS       | sim | 18 | 18 | 22 | 0.061 | 7 |
-| UCS       | sim | 10 | 10 | 28 | 0.087 | 4 |
-| Gulosa    | sim | 10 | 10 | 10 | 0.035 | 9 |
-| A*        | sim | 10 | 10 | 14 | 0.050 | 7 |
+| BFS       | sim | 10 | 10 | 26 | 0.076 | 5 |
+| DFS       | sim | 10 | 10 | 10 | 0.033 | 8 |
+| UCS       | sim | 10 | 10 | 26 | 0.081 | 5 |
+| Gulosa    | sim | 10 | 10 | 10 | 0.033 | 8 |
+| A*        | sim | 10 | 10 | 14 | 0.048 | 7 |
 
 **Mapa `armadilha_gulosa.txt`:**
 
@@ -98,10 +109,10 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 
 | Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (ms) | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 19 | 7  | 14 | 0.050 | 2 |
-| DFS       | sim | 19 | 11 | 11 | 0.036 | 5 |
-| UCS       | sim | 9  | 9  | 14 | 0.049 | 4 |
-| Gulosa    | sim | 19 | 7  | 7  | 0.026 | 8 |
+| BFS       | sim | 19 | 7  | 13 | 0.049 | 3 |
+| DFS       | sim | 19 | 7  | 7  | 0.025 | 8 |
+| UCS       | sim | 9  | 9  | 14 | 0.050 | 4 |
+| Gulosa    | sim | 19 | 7  | 7  | 0.028 | 8 |
 | A*        | sim | 9  | 9  | 10 | 0.038 | 6 |
 
 ### 3.3 Análise (seção 5.4)
@@ -121,7 +132,7 @@ GIFs:
 
 **2. DFS encontrou solução rapidamente? A solução foi boa?** 
 
-*Rápido sim, boa não.* Encontrou uma solução depressa e com **pouca memória** (fronteira de só 7 e 5 nós), pois mergulha num ramo até o fim antes de abrir outros. Mas a qualidade não é garantida: foi subótima nos dois mapas (custo 18 vs 10 no `exemplo`, 19 vs 9 no `armadilha`).
+*Rápida sim, qualidade não garantida.* Com a convenção de varredura horizontal-primeiro (`direita → esquerda → baixo → cima`), a DFS **corre reto até a parede antes de desviar** — dá para ver isso nas figuras. Foi a busca que **expandiu menos nós** (10 e 7), pois mergulha num ramo até o fim antes de abrir outros. Mas a qualidade depende do ramo em que ela cai: no `exemplo` acabou caindo **por sorte** no caminho ótimo (10, igual a BFS/UCS/A\*); no `armadilha` entrou reto na lama e ficou **subótima** (19 vs 9 do ótimo). Ou seja, achar o ótimo no `exemplo` foi coincidência da ordem de expansão, não garantia do algoritmo.
 
 <p align="center">
   <img src="figuras/parte2/exemplo_DFS.png" width="49%" alt="DFS no mapa exemplo">
@@ -133,11 +144,11 @@ GIFs:
 
 **3. UCS diferiu de BFS quando os custos variaram?** 
 
-*Sim, divergiram.* Quando os custos variam, as duas divergem: com a lama, a UCS achou **9** (contornando) e a BFS achou **19** (reto). É o par visual com a figura da BFS acima.
+*Sim, divergiram.* Quando os custos variam, as duas divergem: com a lama, a UCS achou **9** (contornando) e a BFS achou **19** (reto).
 
 <p align="center">
-  <img src="figuras/parte2/exemplo_UCS.png" width="49%" alt="UCS no mapa exemplo">
-  <img src="figuras/parte2/armadilha_gulosa_UCS.png" width="49%" alt="UCS no mapa armadilha">
+    <img src="figuras/parte2/armadilha_gulosa_UCS.png" width="49%" alt="UCS no mapa armadilha">
+    <img src="figuras/parte2/armadilha_gulosa_BFS.png" width="49%" alt="UCS no mapa exemplo">
 </p>
 
 GIFs:
@@ -169,19 +180,51 @@ GIFs:
 
 **6. A heurística utilizada é admissível? Justifique.**
 
-*Sim, é admissível.* Nunca superestima o custo restante (o menor custo por passo é 1), o que **garante a otimalidade do A\***.
-
-Para ver a exploração no terminal:
-`python experimentos.py mapas/[MAPA].txt --animar`.
+*Sim, é admissível.* O menor custo por passo é 1, então ela nunca superestima o custo restante, o que **garante a otimalidade do A\***.
 
 ## 4. Parte III — Busca local
 
 ### 4.1 Modelagem
-- **Representação (6.1):** permutação dos pontos de coleta; rota = A → ordem → B.
 
-- **Custo (6.2):** C(s) = d(A, ordem[0]) + Σ d(ordem[i], ordem[i+1]) + d(ordem[-1], B), com d(X,Y) = menor caminho calculado por **A\*** (reaproveitado da Parte II), considerando a lama.
+O agente parte de `A`, precisa passar por **todos** os pontos de coleta `C` e
+terminar em `B`. O que muda o custo não é *como* andar entre dois pontos (isso é
+problema da Parte II), mas em **que ordem** visitar os `C`. A busca local procura
+essa ordem.
 
-- **Vizinhança (6.4):** inversão de um trecho da ordem (2-opt) — desfaz "cruzamentos" preservando boa parte da sequência.
+- **Representação (6.1):** uma solução é a *ordem de visita* dos `C` — por exemplo,
+  `[C3, C1, C2, ...]`. A rota completa é sempre `A → (essa ordem) → B`.
+
+- **Custo (6.2):** soma das distâncias da rota inteira, na ordem escolhida:
+
+  `C(s) = d(A, C_primeiro) + d(C_primeiro, C_seguinte) + ... + d(C_último, B)`
+
+  Cada distância `d(X, Y)` é o **menor caminho** entre dois pontos no labirinto,
+  calculado pelo **A\*** da Parte II (já considerando a lama). Quanto menor a soma,
+  melhor a ordem.
+
+- **Vizinhança (6.4):** os métodos de busca local não saltam para qualquer ordem;
+  a cada passo eles só conseguem ir de uma ordem para outra *parecida* — uma
+  **vizinha**. Aqui, uma vizinha é obtida **invertendo um trecho** da ordem atual.
+  Um *trecho* é um pedaço contínuo da sequência (das posições `i` até `j`);
+  invertê-lo é lê-lo de trás para frente:
+
+  ```text
+  ordem atual:  [C1, C2, C3, C4, C5]
+                      └── trecho ──┘
+  vizinha:      [C1, C4, C3, C2, C5]   (C2..C4 invertido)
+  ```
+
+  **Por que inverter?** Numa rota, um cruzamento (dois caminhos que se cortam)
+  quase sempre custa mais do que descruzá-los. Inverter um trecho é justamente o
+  que "desfaz" esse cruzamento, mudando só um pedaço da ordem e preservando o
+  resto. Esse movimento é o clássico **2-opt** de problemas de rota (caixeiro-
+  viajante), mais eficaz aqui do que simplesmente trocar dois pontos de lugar.
+
+  **Onde é usada:** cada algoritmo consulta essa vizinhança de um jeito —
+  - o **Hill-Climbing** gera *todas* as vizinhas (inverte cada trecho possível) e
+    pula para a melhor, enquanto houver melhora (`vizinhos_por_inversao`);
+  - o **Simulated Annealing** sorteia *uma* vizinha por iteração e decide se aceita
+    (`vizinho_aleatorio`).
 
 ### 4.2 Resultados (mapa `coletas.txt`, 8 pontos)
 Ótimo global por força bruta (8! = 40320) = **32**. 30 execuções por método.
@@ -197,6 +240,12 @@ Para ver a exploração no terminal:
 #    ~   C   B#
 ###############
 ```
+
+As colunas **Melhor / Pior / Médio** são o custo da rota (menor = melhor) ao longo
+das 30 execuções. Como os métodos usam aleatoriedade, cada rodada pode dar um
+resultado diferente: *Melhor* é o potencial (acha o ótimo?), *Pior* é o risco
+(quão ruim fica no pior caso) e *Médio*, o resultado típico. A fenda entre Melhor
+e Pior mede a **confiabilidade** — se forem iguais, o método é consistente.
 
 | Método | Melhor | Pior | Médio | Tempo méd. | Iter. méd. | Sucesso |
 |--------|:------:|:----:|:-----:|:----------:|:----------:|:-------:|
@@ -222,7 +271,12 @@ possíveis.*
 
 ![Convergência da busca local](figuras/convergencia_local.png)
 
-*Curva iteração × melhor custo: o HC despenca e estaciona cedo (rápido, mas pode travar num mínimo local); o SA desce em "degraus" — cada patamar é uma piora aceita — e só fecha o ótimo (32) por volta da iteração 770.*
+*Curva iteração × melhor custo de **uma única execução** (a primeira das 30), com
+HC e SA partindo da **mesma ordem inicial** — é um confronto direto do
+comportamento de cada método, não o melhor caso de nenhum. A partir do mesmo
+ponto: o HC despenca e estaciona cedo (rápido, mas trava num mínimo local); o SA
+desce em "degraus" — cada patamar é uma piora aceita — e fecha o ótimo (32) por
+volta da iteração 770.*
 
 **Sensibilidade do SA** (taxa de sucesso em atingir o ótimo):
 
@@ -298,15 +352,22 @@ o tamanho e as posições de `A` e `B`).
 | `exemplo.txt`          | sim | 10 | 10 | 34 | 0 | 10 | 10 | **1.00** |
 | `online_armadilha.txt` | sim | 20 | 20 | 50 | 3 | 20 | 14 | **1.43** |
 
+A **razão** = `custo real ÷ ótimo offline`, onde o *ótimo offline* é o custo que a
+busca clássica acharia com o mapa completo. Ela mede quanto o agente pagou a mais
+por descobrir o labirinto enquanto andava: é sempre **≥ 1** (no melhor caso empata
+com o ótimo, 1.00; no `armadilha`, contornar o beco custou 43% a mais, 1.43).
+
 ### 5.3 Análise (seção 7.5)
 
 **1. O agente online tomou decisões subótimas? Por quê?**
 
-*Sim, quando a suposição otimista falha.* No `armadilha`, assumir o desconhecido como livre fez o agente descer reto numa coluna que terminava em **beco sem saída**; ao bater na parede teve de voltar e contornar (razão 1.43). No `exemplo`, a suposição coincidiu com a realidade e não houve perda (razão 1.00). A subotimalidade vem de **agir sobre uma suposição otimista** antes de conhecer os obstáculos.
+*Sim, quando a suposição otimista falha.* A heurística do A\* é a distância de **Manhattan**, que avalia "reto para baixo" como o caminho mais curto (cada passo para baixo reduz o `h`, enquanto ir para o lado o *aumenta*); e a suposição otimista trata o beco — ainda cheio de `?` — como livre. 
+
+A subotimalidade vem de **agir sobre uma suposição otimista** antes de conhecer os obstáculos — guiado por uma heurística que, sem essa informação, aponta direto para a armadilha.
 
 ![Mapa interno final da busca online](figuras/parte4/online_final.png)
 
-*Mapa interno ao fim da execução no `armadilha`: o cinza-claro nunca foi revelado (`?`) e a linha vermelha é a trajetória real — vê-se a descida otimista, o beco e o desvio que eleva a razão a 1.43. Passo a passo no GIF `docs/figuras/parte4/online.gif`.*
+*Mapa interno ao fim da execução no `armadilha`: a linha vermelha é a trajetória real — vê-se a descida otimista, o beco e o desvio que eleva a razão a 1.43. Passo a passo no GIF `docs/figuras/parte4/online.gif`.*
 
 **2. Quais informações faltavam ao agente?**
 
@@ -322,7 +383,7 @@ o tamanho e as posições de `A` e `B`).
 
 **5. Como melhorar a exploração?**
 
-*Várias frentes:* aumentar o raio de percepção (revela mais por passo), supor o desconhecido de forma menos otimista, memorizar becos sem saída e usar replanejamento incremental (D\* Lite) ou LRTA\*, mais eficientes que recalcular o A\* do zero a cada passo.
+*Várias frentes:* aumentar o raio de percepção (revela mais por passo), supor o desconhecido de forma menos otimista e memorizar becos sem saída.
 
 **6. O que diferencia busca online de busca clássica?**
 

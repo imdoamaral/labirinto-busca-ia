@@ -3,7 +3,7 @@
 Modela a tupla <S, A, T, s0, G, c> exigida na seção 5.1 do enunciado:
 
     S  : conjunto de posições livres (não-parede) da grade
-    A  : ações ortogonais {cima, baixo, esquerda, direita}
+    A  : ações ortogonais {direita, esquerda, baixo, cima}
     T  : função de transição -> dado um estado, quais sucessores são válidos
     s0 : posição inicial (a célula 'A')
     G  : teste de objetivo -> alcançar a célula 'B'
@@ -14,11 +14,18 @@ Um "estado" é simplesmente a posição (linha, coluna) do agente na grade.
 
 # Ações ortogonais representadas como deslocamentos (delta_linha, delta_coluna).
 # A linha cresce para baixo, então "cima" subtrai da linha.
+#
+# A ORDEM aqui é a convenção de varredura da árvore de estados: é nela que os
+# sucessores são gerados e, portanto, ela governa o desempate de todas as buscas
+# (na DFS é o que mais aparece). Adotamos HORIZONTAL primeiro (direita, esquerda)
+# e só então vertical (baixo, cima). Assim a DFS "corre reto até a parede" antes
+# de desviar, o que torna a visualização bem mais intuitiva — em vez de
+# serpentear de cima para baixo a cada coluna num corredor horizontal.
 ACOES = {
-    "cima": (-1, 0),
-    "baixo": (1, 0),
-    "esquerda": (0, -1),
     "direita": (0, 1),
+    "esquerda": (0, -1),
+    "baixo": (1, 0),
+    "cima": (-1, 0),
 }
 
 
