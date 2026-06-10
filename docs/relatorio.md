@@ -383,7 +383,7 @@ A subotimalidade vem de **agir sobre uma suposição otimista** antes de conhece
 
 **5. Como melhorar a exploração?**
 
-*Várias frentes:* aumentar o raio de percepção (revela mais por passo), supor o desconhecido de forma menos otimista e memorizar becos sem saída.
+*Várias frentes:* aumentar o raio de percepção (revela mais por passo), memorizar becos sem saída, supor o desconhecido de forma menos otimista.
 
 **6. O que diferencia busca online de busca clássica?**
 
