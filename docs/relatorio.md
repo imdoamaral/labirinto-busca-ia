@@ -90,13 +90,13 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 ###########
 ```
 
-| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (ms) | Fronteira |
+| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (μs) | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 10 | 10 | 26 | 0.076 | 5 |
-| DFS       | sim | 10 | 10 | 10 | 0.033 | 8 |
-| UCS       | sim | 10 | 10 | 26 | 0.081 | 5 |
-| Gulosa    | sim | 10 | 10 | 10 | 0.033 | 8 |
-| A*        | sim | 10 | 10 | 14 | 0.048 | 7 |
+| BFS       | sim | 10 | 10 | 26 | 76 | 5 |
+| DFS       | sim | 10 | 10 | 10 | 33 | 8 |
+| UCS       | sim | 10 | 10 | 26 | 81 | 5 |
+| Gulosa    | sim | 10 | 10 | 10 | 33 | 8 |
+| A*        | sim | 10 | 10 | 14 | 48 | 7 |
 
 **Mapa `armadilha_gulosa.txt`:**
 
@@ -107,13 +107,13 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 ##########
 ```
 
-| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (ms) | Fronteira |
+| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (μs) | Fronteira |
 |-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 19 | 7  | 13 | 0.049 | 3 |
-| DFS       | sim | 19 | 7  | 7  | 0.025 | 8 |
-| UCS       | sim | 9  | 9  | 14 | 0.050 | 4 |
-| Gulosa    | sim | 19 | 7  | 7  | 0.028 | 8 |
-| A*        | sim | 9  | 9  | 10 | 0.038 | 6 |
+| BFS       | sim | 19 | 7  | 13 | 49 | 3 |
+| DFS       | sim | 19 | 7  | 7  | 25 | 8 |
+| UCS       | sim | 9  | 9  | 14 | 50 | 4 |
+| Gulosa    | sim | 19 | 7  | 7  | 28 | 8 |
+| A*        | sim | 9  | 9  | 10 | 38 | 6 |
 
 ### 3.3 Análise (seção 5.4)
 Nas figuras: hachura azul = **células exploradas**, linha vermelha = **caminho devolvido**, bege = **lama** (`~`). Cada item mostra o algoritmo nos dois mapas — `exemplo` (custo uniforme) à esquerda e `armadilha_gulosa` à direita.
@@ -148,11 +148,11 @@ GIFs:
 
 <p align="center">
     <img src="figuras/parte2/armadilha_gulosa_UCS.png" width="49%" alt="UCS no mapa armadilha">
-    <img src="figuras/parte2/armadilha_gulosa_BFS.png" width="49%" alt="UCS no mapa exemplo">
+    <img src="figuras/parte2/armadilha_gulosa_BFS.png" width="49%" alt="BFS no mapa armadilha">
 </p>
 
 GIFs:
-[(exemplo)](figuras/parte2/exemplo_UCS.gif) · [(armadilha)](figuras/parte2/armadilha_gulosa_UCS.gif)
+[(UCS)](figuras/parte2/armadilha_gulosa_UCS.gif) · [(BFS)](figuras/parte2/armadilha_gulosa_BFS.gif)
 
 **4. A busca gulosa foi eficiente? Foi ótima?** 
 
@@ -267,7 +267,7 @@ possíveis.*
 
 **2. Simulated Annealing encontrou soluções melhores?**
 
-*Sim.* Atingiu o ótimo (32) em 100% das execuções, porque aceita pioras com probabilidade exp(−Δ/T) e assim escapa dos mínimos locais que prendem o HC.
+*Não em qualidade de pico, mas sim em confiabilidade.* O **melhor** resultado é o mesmo nos dois métodos — o ótimo global (32); o SA não encontra solução abaixo desse teto, e nenhum método encontraria. O ganho do SA é de **consistência**: atingiu o ótimo em **100%** das execuções, contra **73%** do HC, melhorando a qualidade **média e de pior caso** (o HC chega a estacionar em 38). Isso acontece porque o SA aceita pioras com probabilidade exp(−Δ/T) e assim escapa dos mínimos locais que prendem o HC.
 
 ![Convergência da busca local](figuras/convergencia_local.png)
 
