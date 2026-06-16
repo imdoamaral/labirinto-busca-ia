@@ -90,13 +90,13 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 ###########
 ```
 
-| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (μs) | Fronteira |
-|-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 10 | 10 | 26 | 76 | 5 |
-| DFS       | sim | 10 | 10 | 10 | 33 | 8 |
-| UCS       | sim | 10 | 10 | 26 | 81 | 5 |
-| Gulosa    | sim | 10 | 10 | 10 | 33 | 8 |
-| A*        | sim | 10 | 10 | 14 | 48 | 7 |
+| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (×10⁻² ms) | Fronteira |
+|-----------|:-------:|:-----:|:------:|:----------:|:----------------:|:---------:|
+| BFS       | sim | 10 | 10 | 26 | 7.6 | 5 |
+| DFS       | sim | 10 | 10 | 10 | 3.3 | 8 |
+| UCS       | sim | 10 | 10 | 26 | 8.1 | 5 |
+| Gulosa    | sim | 10 | 10 | 10 | 3.3 | 8 |
+| A*        | sim | 10 | 10 | 14 | 4.8 | 7 |
 
 **Mapa `armadilha_gulosa.txt`:**
 
@@ -107,13 +107,13 @@ lama, curto em passos e caro, com um desvio livre ao lado).
 ##########
 ```
 
-| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (μs) | Fronteira |
-|-----------|:-------:|:-----:|:------:|:----------:|:----------:|:---------:|
-| BFS       | sim | 19 | 7  | 13 | 49 | 3 |
-| DFS       | sim | 19 | 7  | 7  | 25 | 8 |
-| UCS       | sim | 9  | 9  | 14 | 50 | 4 |
-| Gulosa    | sim | 19 | 7  | 7  | 28 | 8 |
-| A*        | sim | 9  | 9  | 10 | 38 | 6 |
+| Algoritmo | Sucesso | Custo | Passos | Expandidos | Tempo (×10⁻² ms) | Fronteira |
+|-----------|:-------:|:-----:|:------:|:----------:|:----------------:|:---------:|
+| BFS       | sim | 19 | 7  | 13 | 4.9 | 3 |
+| DFS       | sim | 19 | 7  | 7  | 2.5 | 8 |
+| UCS       | sim | 9  | 9  | 14 | 5.0 | 4 |
+| Gulosa    | sim | 19 | 7  | 7  | 2.8 | 8 |
+| A*        | sim | 9  | 9  | 10 | 3.8 | 6 |
 
 ### 3.3 Análise (seção 5.4)
 Nas figuras: hachura azul = **células exploradas**, linha vermelha = **caminho devolvido**, bege = **lama** (`~`). Cada item mostra o algoritmo nos dois mapas — `exemplo` (custo uniforme) à esquerda e `armadilha_gulosa` à direita.
